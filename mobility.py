@@ -37,6 +37,7 @@ class Mobility:
 
 
 class RectangularDirectedMobility(Mobility):
+    """ RectangularDirectedMobility: mobility that has fixed direction and speed, restricted in a rectangular area"""
     def __init__(self, min_x, max_x, min_y, max_y, min_z, max_z, direction, speed):
         self.min_x = min_x
         self.max_x = max_x
