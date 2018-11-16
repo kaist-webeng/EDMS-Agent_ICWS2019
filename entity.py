@@ -1,5 +1,8 @@
+from .mobility import *
+
+
 class Service:
-    """ Service: a class that represents service instances """
+    """ Service: a basic class that represents service instances """
     def __init__(self, name, service_type, device=None):
         self.name = name
         self.type = service_type
@@ -13,17 +16,33 @@ class Service:
         self.user = None
 
     def acquire(self, user):
+        """ acquire: user acquires the service to use """
         assert user and type(user) == User
         self.in_use = True
         self.user = user
 
     def release(self):
+        """ release: user releases the service """
         self.in_use = False
         self.user = None
 
 
 class Device:
-    pass
+    """ Device: a basic class that represents devices """
+    def __init__(self, name, device_type, coordinate, mobility):
+        self.name = name
+        self.type = device_type
+        self.mobility = mobility
+
+        """ coordinate of the device, since it has physical body """
+        assert type(coordinate) == Coordinate
+        self.coordinate = coordinate
+
+    def get_coordinate(self):
+        return self.coordinate.get()
+
+    def move(self):
+        self.mobility.update(self.coordinate)
 
 
 class User:
