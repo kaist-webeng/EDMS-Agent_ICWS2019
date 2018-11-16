@@ -27,14 +27,14 @@ class Service:
         self.user = None
 
 
-class Device:
-    """ Device: a basic class that represents devices """
-    def __init__(self, name, device_type, coordinate, mobility):
-        self.name = name
-        self.type = device_type
+class Body:
+    """ Body: physical body class, mainly deals with coordinate and mobility """
+    def __init__(self, coordinate, mobility):
+        """ mobility of the body """
+        assert type(mobility) == Mobility
         self.mobility = mobility
 
-        """ coordinate of the device, since it has physical body """
+        """ coordinate of the body """
         assert type(coordinate) == Coordinate
         self.coordinate = coordinate
 
@@ -45,5 +45,16 @@ class Device:
         self.mobility.update(self.coordinate)
 
 
-class User:
-    pass
+class Device(Body):
+    """ Device: a basic class that represents devices """
+    def __init__(self, name, device_type, coordinate, mobility):
+        Body.__init__(self, coordinate, mobility)
+        self.name = name
+        self.type = device_type
+
+
+class User(Body):
+    """ User: a basic class that represents users """
+    def __init__(self, uid, coordinate, mobility):
+        Body.__init__(self, coordinate, mobility)
+        self.uid = uid
