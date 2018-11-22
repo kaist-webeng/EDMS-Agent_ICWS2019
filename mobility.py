@@ -1,5 +1,7 @@
+import random
 import numpy as np
 from abc import abstractmethod
+from utils import clamp
 
 
 class Coordinate:
@@ -23,6 +25,10 @@ class Coordinate:
 
     def __str__(self):
         return "(X:{x}, Y:{y}), Z:{z}".format(x=self.x, y=self.y, z=self.z)
+
+
+def generate_random_coordinate(width, height, depth):
+    return Coordinate(x=random.random() * width, y=random.random() * height, z=random.random() * depth)
 
 
 class Mobility:
