@@ -1,5 +1,4 @@
 import random
-import math
 import numpy as np
 from abc import abstractmethod
 from utils import clamp
@@ -84,3 +83,9 @@ class RectangularDirectedMobility(Mobility):
             self.direction = generate_random_direction()
 
         coordinate.update(new_x, new_y, new_z)
+
+
+def generate_random_rectangular_directed_mobility(width, height, depth, max_speed):
+    return RectangularDirectedMobility(width, height, depth,
+                                       generate_random_direction(),
+                                       random.random() * max_speed)
