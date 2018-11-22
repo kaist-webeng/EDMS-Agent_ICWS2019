@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from entity import User, Device, Service
+from models.entity import User, Device, Service
 from models.mobility import generate_random_coordinate, generate_random_rectangular_directed_mobility
 from models.observation import EuclideanObservation
 
