@@ -1,10 +1,12 @@
 import datetime
 import random
 from abc import abstractmethod
+from models.environment import Environment
 
 
 class Agent:
     def __init__(self, env, num_episode, num_step):
+        assert isinstance(env, Environment)
         self.env = env
 
         # Training configuration
@@ -16,15 +18,30 @@ class Agent:
 
     @abstractmethod
     def selection(self, user, services):
-        pass
+        return None
 
     @abstractmethod
     def train(self):
         pass
 
-    @abstractmethod
     def test(self):
-        pass
+        print("Test phase")
+        for i_episode in range(self.num_episode):
+            print("Episode %d" % i_episode)
+
+            score = 0.
+            observation = self.env.reset()
+
+            """ since service selection is non-episodic task, restrict maximum step rather than observe done-signal"""
+            for i_step in range(self.num_step):
+                """ select action """
+                action = self.selection(observation["user"], observation["services"])
+                """ perform the selected action on the environment """
+                observation, reward, done = self.env.step(action)
+                """ add reward to total score """
+                score += reward
+
+            print("Episode %d ends with  score %r" % (i_episode, score))
 
 
 class RandomSelectionAgent(Agent):
