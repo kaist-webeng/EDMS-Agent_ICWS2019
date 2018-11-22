@@ -93,6 +93,8 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
             self.devices.append(new_device)
             self.services.append(new_service)
 
+        return self.get_observation()
+
     def get_state(self):
         """ get_state: return the full state of the environment """
         return {
@@ -119,4 +121,6 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
         return self.get_observation(), reward, done
 
     def render(self):
-        pass
+        print(self.user)
+        for service in self.services:
+            print(service)
