@@ -75,6 +75,12 @@ class RectangularDirectedMobility(Mobility):
         self.speed = speed
 
     def update(self, coordinate):
-        coordinate.update(clamp(coordinate.x, 0, self.width),
-                          clamp(coordinate.y, 0, self.height),
-                          clamp(coordinate.z, 0, self.depth))
+        new_x = clamp(coordinate.x + self.direction.x * self.speed, 0, self.width)
+        new_y = clamp(coordinate.y + self.direction.y * self.speed, 0, self.height)
+        new_z = clamp(coordinate.z + self.direction.z * self.speed, 0, self.depth)
+
+        if new_x == 0 or new_x == self.width or new_y == 0 or new_y == self.height or new_z == 0 or new_z == self.depth:
+            """ if new direction is on the boundary of the area, reset direction randomly """
+            self.direction = generate_random_direction()
+
+        coordinate.update(new_x, new_y, new_z)
