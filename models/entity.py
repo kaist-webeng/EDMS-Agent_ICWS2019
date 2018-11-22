@@ -9,7 +9,7 @@ class Service:
 
         """ Type of associated device should be Device """
         # TODO currently, service - device is one-to-one matching
-        assert not device or type(device) == Device
+        assert isinstance(device, Device)
         self.device = device
 
         """ Flag: whether the service is in use or not """
@@ -18,7 +18,7 @@ class Service:
 
     def acquire(self, user):
         """ acquire: user acquires the service to use """
-        assert user and type(user) == User
+        assert isinstance(user, User)
         self.in_use = True
         self.user = user
 
@@ -32,18 +32,18 @@ class Body:
     """ Body: physical body class, mainly deals with coordinate and mobility """
     def __init__(self, coordinate, mobility):
         """ mobility of the body """
-        assert type(mobility) == Mobility
+        assert isinstance(mobility, Mobility)
         self.mobility = mobility
 
         """ coordinate of the body """
-        assert type(coordinate) == Coordinate
+        assert isinstance(coordinate, Coordinate)
         self.coordinate = coordinate
 
     def get_coordinate(self):
         return self.coordinate.get()
 
     def distance(self, other):
-        assert type(other) == Body
+        assert isinstance(other, Body)
         return self.coordinate.distance(other.coordinate)
 
     def move(self):

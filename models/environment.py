@@ -55,7 +55,7 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
         """ depth: z-axis size of the environment """
         self.depth = depth
         """ observation_range: observation range of the user, for distance-based partial observation """
-        assert type(observation) == EuclideanObservation
+        assert isinstance(observation, EuclideanObservation)
         self.observation = observation
         """ max_speed: maximum speed that a mobile object can have """
         self.max_speed = max_speed

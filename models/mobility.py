@@ -27,7 +27,7 @@ class Coordinate(Vector):
     """ Coordinate: class that represents coordinate of a physical entity in a 3-dimensional space """
     def distance(self, other):
         """ distance: calculate Euclidean distance between coordinates"""
-        assert type(other) == Coordinate
+        assert isinstance(other, Coordinate)
         return np.sqrt(np.square(self.x - other.x) + np.square(self.y - other.y) + np.square(self.z - other.z))
 
 
@@ -43,7 +43,6 @@ class Direction(Vector):
         unit_x = np.sqrt(np.square(x)/denominator)
         unit_y = np.sqrt(np.square(y)/denominator)
         unit_z = np.sqrt(np.square(z)/denominator)
-        assert np.square(unit_x) + np.square(unit_y) + np.square(unit_z) == 1
         Vector.__init__(self, unit_x, unit_y, unit_z)
 
 
@@ -69,7 +68,7 @@ class RectangularDirectedMobility(Mobility):
         self.depth = depth
 
         """ direction: direction of the mobility, Direction class """
-        assert type(direction) == Direction
+        assert isinstance(direction, Direction)
         self.direction = direction
         self.speed = speed
 
