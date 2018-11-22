@@ -27,6 +27,13 @@ class Service:
         self.in_use = False
         self.user = None
 
+    def __str__(self):
+        return "Service name {name}, type {type}, device {device} " \
+               "at {coordinate}".format(name=self.name,
+                                        type=self.type,
+                                        device=self.device.name,
+                                        coordinate=self.device.coordinate)
+
 
 class Body:
     """ Body: physical body class, mainly deals with coordinate and mobility """
@@ -57,9 +64,17 @@ class Device(Body):
         self.name = name
         self.type = device_type
 
+    def __str__(self):
+        return "Device {name}, type {type} at {coordinate}".format(name=self.name,
+                                                                   type=self.type,
+                                                                   coordinate=self.coordinate)
+
 
 class User(Body):
     """ User: a basic class that represents users """
     def __init__(self, uid, coordinate, mobility):
         Body.__init__(self, coordinate, mobility)
         self.uid = uid
+
+    def __str__(self):
+        return "User {uid} at {coordinate}".format(uid=self.uid, coordinate=self.coordinate)

@@ -20,7 +20,7 @@ class Vector:
         self.z = z
 
     def __str__(self):
-        return "(X:{x}, Y:{y}), Z:{z}".format(x=self.x, y=self.y, z=self.z)
+        return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
 
 
 class Coordinate(Vector):
