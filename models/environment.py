@@ -2,7 +2,8 @@ from abc import abstractmethod
 
 from models.entity import User, Device, Service
 from models.mobility import generate_random_coordinate, generate_random_rectangular_directed_mobility
-from models.observation import EuclideanObservation
+from models.observation import Observation
+from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEffectiveness
 
 
 class Environment:
@@ -43,7 +44,7 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
             - Partial observation based on Euclidean-distance
             - 3-dimensional space
     """
-    def __init__(self, service_type, num_device, width, height, depth, observation, max_speed):
+    def __init__(self, service_type, num_device, width, height, depth, max_speed, observation, effectiveness):
         """ service_type: type of service to simulate """
         self.service_type = service_type
         """ num_device: number of devices """
@@ -54,11 +55,15 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
         self.height = height
         """ depth: z-axis size of the environment """
         self.depth = depth
-        """ observation_range: observation range of the user, for distance-based partial observation """
-        assert isinstance(observation, EuclideanObservation)
-        self.observation = observation
         """ max_speed: maximum speed that a mobile object can have """
         self.max_speed = max_speed
+
+        """ observation: observation model, for distance-based partial observation """
+        assert isinstance(observation, Observation)
+        self.observation = observation
+        """ effectiveness: effectiveness model """
+        assert isinstance(effectiveness, Effectiveness)
+        self.effectiveness = effectiveness
 
         self.user = None
         self.devices = []
@@ -111,8 +116,11 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
         return self.observation.get_observation(self.user, self.services)
 
     def step(self, action):
-        reward = 0.
+        """ receives selection result as a service instance """
+        assert isinstance(action, Service)
+
         done = False
+        reward = self.effectiveness.measure(self.user, action)
 
         # TODO reward calculation
         # TODO state update according to the given action
