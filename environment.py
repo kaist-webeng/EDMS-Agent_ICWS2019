@@ -1,4 +1,6 @@
 from abc import abstractmethod
+from entity import User, Device, Service
+
 
 class Environment:
     """ Environment: abstract class of IoT environments for required methods """

@@ -1,4 +1,4 @@
-from .mobility import *
+from mobility import Coordinate, Mobility
 
 
 class Service:

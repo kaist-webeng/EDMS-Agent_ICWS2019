@@ -1,5 +1,5 @@
 import random
-from mobility import *
+from mobility import Coordinate
 
 
 def clamp(value, min_value, max_value):
