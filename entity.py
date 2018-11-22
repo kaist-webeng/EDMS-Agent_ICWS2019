@@ -1,4 +1,4 @@
-from mobility import Coordinate, Mobility
+from models.mobility import Coordinate, Mobility
 
 
 class Service:
@@ -8,6 +8,7 @@ class Service:
         self.type = service_type
 
         """ Type of associated device should be Device """
+        # TODO currently, service - device is one-to-one matching
         assert not device or type(device) == Device
         self.device = device
 
@@ -40,6 +41,10 @@ class Body:
 
     def get_coordinate(self):
         return self.coordinate.get()
+
+    def distance(self, other):
+        assert type(other) == Body
+        return self.coordinate.distance(other.coordinate)
 
     def move(self):
         self.mobility.update(self.coordinate)
