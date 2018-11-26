@@ -48,7 +48,7 @@ class Agent:
                 """ add reward to total score """
                 score += reward
 
-            print("Episode %d ends with average score %r" % (i_episode, score / self.num_step))
+            print("Episode %d ends with average score %f" % (i_episode, score / self.num_step))
 
 
 class RandomSelectionAgent(Agent):
@@ -79,12 +79,13 @@ class DRRNSelectionAgent(Agent):
         self.memory = ExperienceMemory(memory_size)
         self.batch_size = batch_size
 
-        """ Summary """
-        self.loss_list = tf.placeholder(shape=[None, 1], dtype=tf.float32, name="LossList")
-        variable_summaries(self.loss_list, "Loss")
-        self.reward_list = tf.placeholder(shape=[None], dtype=tf.float32, name="RewardList")
-        variable_summaries(self.reward_list, "Reward")
-        self.summary = tf.summary.merge_all()
+        with tf.variable_scope("Summary"):
+            """ Summary """
+            self.loss_list = tf.placeholder(shape=[None, 1], dtype=tf.float32, name="LossList")
+            variable_summaries(self.loss_list, "Loss")
+            self.reward_list = tf.placeholder(shape=[None], dtype=tf.float32, name="RewardList")
+            variable_summaries(self.reward_list, "Reward")
+            self.summary = tf.summary.merge_all()
 
     def selection(self, sess, user, services):
         Q_set = self.network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
@@ -93,6 +94,12 @@ class DRRNSelectionAgent(Agent):
 
     def train(self, sess):
         print("Train phase")
+
+        # Epsilon greedy configuration
+        eps = 1.0
+        eps_anneal_steps = 1000
+        eps_decay = 0.99
+        eps_final = 1e-2
 
         writer = tf.summary.FileWriter('./summary/train/' + self.date, sess.graph)
 
@@ -105,14 +112,17 @@ class DRRNSelectionAgent(Agent):
 
             for i_step in range(self.num_step):
                 """ select action """
-                action, action_index = self.selection(sess, observation["user"], observation["services"])
+                if random.random() <= eps:
+                    action_index = random.choice(range(len(observation["services"])))
+                    action = observation["services"][action_index]
+                else:
+                    action, action_index = self.selection(sess, observation["user"], observation["services"])
+
                 """ perform the selected action on the environment """
                 next_observation, reward, done = self.env.step(action)
                 reward_list.append(reward)
 
-                if observation["services"] and next_observation["services"]:
-                    """ record only when services are discovered currently and next state """
-                    self.memory.add(observation, action_index, reward, next_observation)
+                self.memory.add(observation, action_index, reward, next_observation)
 
                 if self.memory.is_full():
                     """ training the network """
@@ -122,7 +132,9 @@ class DRRNSelectionAgent(Agent):
                 observation = next_observation
 
             self.summarize_episode(sess, writer, i_episode, loss_list, reward_list)
-            print("Episode %d ends with average score %r" % (i_episode, np.mean(reward_list)))
+            print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
+                                                                                     reward=np.mean(reward_list),
+                                                                                     loss=np.mean(loss_list)))
 
     def learn(self, sess):
         batch = self.memory.sample(self.batch_size)
