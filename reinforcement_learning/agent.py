@@ -32,7 +32,7 @@ class Agent:
             score = 0.
             observation = self.env.reset()
 
-            """ since service selection is non-episodic task, restrict maximum step rather than observe done-signal"""
+            """ since service selection is non-episodic task, restrict maximum step rather than observe done-signal """
             for i_step in range(self.num_step):
                 """ select action """
                 action = self.selection(observation["user"], observation["services"])
@@ -55,3 +55,14 @@ class NearestSelectionAgent(Agent):
     def selection(self, user, services):
         services.sort(key=lambda service: user.distance(service.device))
         return services[0]
+
+
+class DQNSelectionAgent(Agent):
+    def __init__(self, env, num_episode, num_step):
+        Agent.__init__(self, env, num_episode, num_step)
+
+    def selection(self, user, services):
+        pass
+
+    def train(self):
+        pass
