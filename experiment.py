@@ -1,9 +1,9 @@
 from abc import abstractmethod
 
+from models.effectiveness import DistanceEffectiveness
 from models.environment import SingleUserSingleServicePartialObservable3DEnvironment
 from models.observation import EuclideanObservation
-from models.effectiveness import DistanceEffectiveness
-from agent import RandomSelectionAgent
+from reinforcement_learning.agent import RandomSelectionAgent
 
 
 class Experiment:
