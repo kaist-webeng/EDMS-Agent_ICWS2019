@@ -72,7 +72,7 @@ class DRRN(Network):
         """ update network according to given observation, action, reward and next_observation value """
         target = reward + self.discount_factor * np.max(self.sample(sess, next_observation, next_actions))
         return sess.run(
-            [self.loss, self.update_model],
+            (self.loss, self.update_model),
             feed_dict={
                 self.user_observation: observation,
                 self.action_observation: actions,

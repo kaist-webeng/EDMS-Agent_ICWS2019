@@ -7,6 +7,7 @@ from abc import abstractmethod
 from reinforcement_learning.network import DRRN
 from reinforcement_learning.experience_memory import ExperienceMemory
 from models.environment import Environment
+from utils import variable_summaries
 
 
 class Agent:
@@ -78,6 +79,13 @@ class DRRNSelectionAgent(Agent):
         self.memory = ExperienceMemory(memory_size)
         self.batch_size = batch_size
 
+        """ Summary """
+        self.loss_list = tf.placeholder(shape=[None, 1], dtype=tf.float32, name="LossList")
+        variable_summaries(self.loss_list, "Loss")
+        self.reward_list = tf.placeholder(shape=[None], dtype=tf.float32, name="RewardList")
+        variable_summaries(self.reward_list, "Reward")
+        self.summary = tf.summary.merge_all()
+
     def selection(self, sess, user, services):
         Q_set = self.network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
         selection = np.argmax(Q_set)
@@ -85,10 +93,14 @@ class DRRNSelectionAgent(Agent):
 
     def train(self, sess):
         print("Train phase")
+
+        writer = tf.summary.FileWriter('./summary/train/' + self.date, sess.graph)
+
         for i_episode in range(self.num_episode):
             print("Episode %d" % i_episode)
 
-            score = 0.
+            reward_list = []
+            loss_list = []
             observation = self.env.reset()
 
             for i_step in range(self.num_step):
@@ -96,29 +108,41 @@ class DRRNSelectionAgent(Agent):
                 action, action_index = self.selection(sess, observation["user"], observation["services"])
                 """ perform the selected action on the environment """
                 next_observation, reward, done = self.env.step(action)
-                """ add reward to total score """
-                score += reward
+                reward_list.append(reward)
 
                 self.memory.add(observation, action_index, reward, next_observation)
 
                 if self.memory.is_full():
                     """ training the network """
-                    self.learn(sess)
+                    loss_list += self.learn(sess)
 
                 """ set observation to next state """
                 observation = next_observation
 
-            print("Episode %d ends with average score %r" % (i_episode, score/self.num_step))
+            self.summarize_episode(sess, writer, i_episode, loss_list, reward_list)
+            print("Episode %d ends with average score %r" % (i_episode, np.mean(reward_list)))
 
     def learn(self, sess):
         batch = self.memory.sample(self.batch_size)
+        loss_list = []
 
         for memory in batch:
-            self.network.update(sess=sess,
-                                observation=memory["observation"]["user"].vectorize(),
-                                actions=[service.vectorize() for service in memory["observation"]["services"]],
-                                action=memory["action"],
-                                reward=memory["reward"],
-                                next_observation=memory["next_observation"]["user"].vectorize(),
-                                next_actions=[service.vectorize() for service in memory["next_observation"]["services"]])
+            loss, _ = self.network.update(sess=sess,
+                                          observation=memory["observation"]["user"].vectorize(),
+                                          actions=[service.vectorize() for service in memory["observation"]["services"]],
+                                          action=memory["action"],
+                                          reward=memory["reward"],
+                                          next_observation=memory["next_observation"]["user"].vectorize(),
+                                          next_actions=[service.vectorize() for service in memory["next_observation"]["services"]])
+            loss_list.append(loss)
+        return loss_list
 
+    def summarize_episode(self, sess, writer, i_episode, loss_list, reward_list):
+        writer.add_summary(
+            sess.run(self.summary,
+                     feed_dict={
+                         self.loss_list: loss_list,
+                         self.reward_list: reward_list
+                     }),
+            i_episode
+        )
