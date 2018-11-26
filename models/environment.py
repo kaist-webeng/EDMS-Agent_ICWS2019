@@ -106,6 +106,10 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
             self.devices.append(new_device)
             self.services.append(new_service)
 
+        while not self.get_observation()["services"]:
+            """ update until at least one service discovered """
+            self.update_state()
+
         return self.get_observation()
 
     def get_state(self):
@@ -126,6 +130,12 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
 
         done = False
         reward = self.effectiveness.measure(self.user, action)
+
+        # Release service and acquire new
+        if self.user.service:
+            self.user.service.release()
+        self.user.utilize(action)
+        action.acquire(self.user)
 
         # TODO reward calculation
         # TODO state update according to the given action

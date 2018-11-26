@@ -28,8 +28,11 @@ class Service:
         self.user = None
 
     def vectorize(self):
-        # TODO vector representation of services
-        return self.device.vectorize()
+        # TODO vector representation of services: multi-user situation
+        if self.in_use:
+            return self.device.vectorize() + [1]
+        else:
+            return self.device.vectorize() + [0]
 
     def __str__(self):
         return "Service name {name}, type {type}, device {device} " \
@@ -82,6 +85,11 @@ class User(Body):
     def __init__(self, uid, coordinate, mobility):
         Body.__init__(self, coordinate, mobility)
         self.uid = uid
+        self.service = None
 
     def __str__(self):
         return "User {uid} at {coordinate}".format(uid=self.uid, coordinate=self.coordinate)
+
+    def utilize(self, service):
+        assert isinstance(service, Service)
+        self.service = service

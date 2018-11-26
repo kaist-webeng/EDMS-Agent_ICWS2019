@@ -22,44 +22,56 @@ class DRRN(Network):
         self.discount_factor = discount_factor
 
         """ State/observation """
-        self.user_observation = tf.placeholder(shape=[self.observation_size], dtype=tf.float32,
-                                               name="observation")
+        with tf.variable_scope("Observation"):
+            self.user_observation = tf.placeholder(shape=[self.observation_size], dtype=tf.float32,
+                                                   name="observation")
 
-        self.action_observation = tf.placeholder(shape=[None, self.action_size], dtype=tf.float32,
-                                                 name="action")
-        num_actions = tf.shape(self.action_observation)[0]
+            self.action_observation = tf.placeholder(shape=[None, self.action_size], dtype=tf.float32,
+                                                     name="action")
+            num_actions = tf.shape(self.action_observation)[0]
 
         """ hidden layers """
-        self.user_tile = tf.tile(
-            tf.reshape(self.user_observation, [1, self.observation_size]),
-            [num_actions, 1])
+        with tf.variable_scope("Hidden"):
+            self.observation_tile = tf.tile(
+                tf.reshape(self.user_observation, [1, self.observation_size]),
+                [num_actions, 1])
 
-        self.user_hidden_layer_output = layers.fully_connected(inputs=self.user_tile,
-                                                               num_outputs=128)
-        self.action_hidden_layer_output = layers.fully_connected(inputs=self.action_observation,
-                                                                 num_outputs=128)
+            self.observation_hidden_layer_1 = layers.fully_connected(inputs=self.observation_tile,
+                                                                     num_outputs=128)
+            self.observation_hidden_layer_2 = layers.fully_connected(inputs=self.observation_hidden_layer_1,
+                                                                     num_outputs=128)
+            self.user_hidden_layer_output = layers.fully_connected(inputs=self.observation_hidden_layer_2,
+                                                                   num_outputs=128)
 
-        """ combine observations """
-        self.input = tf.concat(
+            self.observation_action_layer_1 = layers.fully_connected(inputs=self.action_observation,
+                                                                     num_outputs=128)
+            self.observation_action_layer_2 = layers.fully_connected(inputs=self.observation_action_layer_1,
+                                                                     num_outputs=128)
+            self.action_hidden_layer_output = layers.fully_connected(inputs=self.observation_action_layer_2,
+                                                                     num_outputs=128)
+
+        """ combine observation and action """
+        self.combine = tf.concat(
             [self.user_hidden_layer_output,
              self.action_hidden_layer_output],
             axis=1
         )
 
-        self.Q = layers.fully_connected(inputs=self.input,
+        self.Q = layers.fully_connected(inputs=self.combine,
                                         num_outputs=1,
                                         activation_fn=None,
                                         biases_initializer=None)
 
-        """ Training """
-        self.target = tf.placeholder(shape=[], dtype=tf.float32)
-        self.action = tf.placeholder(shape=[], dtype=tf.int32)
+        with tf.variable_scope("Training"):
+            """ Training """
+            self.target = tf.placeholder(shape=[], dtype=tf.float32, name="target")
+            self.action = tf.placeholder(shape=[], dtype=tf.int32, name="action")
 
-        """ only considers output that selected """
-        self.responsible_output = tf.gather(self.Q, self.action)
-        self.loss = self.target - self.responsible_output
-        self.trainer = tf.train.AdamOptimizer(self.learning_rate)
-        self.update_model = self.trainer.minimize(self.loss)
+            """ only considers output that selected """
+            self.responsible_output = tf.gather(self.Q, self.action)
+            self.loss = tf.square(self.target - self.responsible_output)
+            self.trainer = tf.train.AdamOptimizer(self.learning_rate)
+            self.update_model = self.trainer.minimize(self.loss)
 
     def sample(self, sess, observation, actions):
         """ calculate Q value of given observation and action """
