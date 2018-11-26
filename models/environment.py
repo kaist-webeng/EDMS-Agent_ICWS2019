@@ -129,7 +129,10 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
 
         # TODO reward calculation
         # TODO state update according to the given action
-        self.update_state()
+
+        while not self.get_observation()["services"]:
+            """ update until at least one service discovered """
+            self.update_state()
 
         return self.get_observation(), reward, done
 
@@ -139,10 +142,17 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
             print(service)
 
     def get_observation(self):
+        """ return observation in both dictionary format """
         return self.observation.get_observation(self.user, self.services)
 
+    def get_observation_vector(self):
+        return {
+            "user": self.user.vectorize(),
+            "services": [service.vectorize() for service in self.services]
+        }
+
     def get_observation_size(self):
-        pass
+        return len(self.user.vectorize())
 
     def get_action_size(self):
-        pass
+        return len(self.services[0].vectorize())
