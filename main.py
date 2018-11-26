@@ -9,7 +9,7 @@ def main():
                                                               depth=10,
                                                               max_speed=1,
                                                               observation_range=3,
-                                                              num_episode=10,
+                                                              num_episode=1000,
                                                               num_step=100,
                                                               memory_size=10,
                                                               batch_size=10)

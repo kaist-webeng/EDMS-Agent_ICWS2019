@@ -130,6 +130,7 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
         # TODO reward calculation
         # TODO state update according to the given action
 
+        self.update_state()
         while not self.get_observation()["services"]:
             """ update until at least one service discovered """
             self.update_state()

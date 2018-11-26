@@ -110,7 +110,9 @@ class DRRNSelectionAgent(Agent):
                 next_observation, reward, done = self.env.step(action)
                 reward_list.append(reward)
 
-                self.memory.add(observation, action_index, reward, next_observation)
+                if observation["services"] and next_observation["services"]:
+                    """ record only when services are discovered currently and next state """
+                    self.memory.add(observation, action_index, reward, next_observation)
 
                 if self.memory.is_full():
                     """ training the network """

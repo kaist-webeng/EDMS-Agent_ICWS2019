@@ -44,9 +44,12 @@ class Direction(Vector):
         """ Direction should be a unit vector """
         denominator = np.square(x) + np.square(y) + np.square(z)
         unit_x = np.sqrt(np.square(x)/denominator)
+        sign_x = 1 if x > 0 else -1
         unit_y = np.sqrt(np.square(y)/denominator)
+        sign_y = 1 if y > 0 else -1
         unit_z = np.sqrt(np.square(z)/denominator)
-        Vector.__init__(self, unit_x, unit_y, unit_z)
+        sign_z = 1 if z > 0 else -1
+        Vector.__init__(self, sign_x*unit_x, sign_y*unit_y, sign_z*unit_z)
 
 
 def generate_random_direction():
