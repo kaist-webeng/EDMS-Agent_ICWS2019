@@ -122,6 +122,7 @@ class DRRNSelectionAgent(Agent):
                 observation = next_observation
 
             self.summarize_episode(sess, writer, i_episode, loss_list, reward_list)
+            print(reward_list)
             print("Episode %d ends with average score %r" % (i_episode, np.mean(reward_list)))
 
     def learn(self, sess):

@@ -53,7 +53,7 @@ class Direction(Vector):
 
 
 def generate_random_direction():
-    return Direction(random.random(), random.random(), random.random())
+    return Direction(random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1))
 
 
 class Mobility:
