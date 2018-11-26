@@ -22,6 +22,9 @@ class Vector:
     def __str__(self):
         return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
 
+    def vectorize(self):
+        return [self.x, self.y, self.z]
+
 
 class Coordinate(Vector):
     """ Coordinate: class that represents coordinate of a physical entity in a 3-dimensional space """
@@ -59,6 +62,10 @@ class Mobility:
         """ update: receives current coordinate and returns new """
         return coordinate
 
+    @abstractmethod
+    def vectorize(self):
+        return []
+
 
 class RectangularDirectedMobility(Mobility):
     """ RectangularDirectedMobility: mobility that has fixed direction and speed, restricted in a rectangular area"""
@@ -82,6 +89,9 @@ class RectangularDirectedMobility(Mobility):
             self.direction = generate_random_direction()
 
         coordinate.update(new_x, new_y, new_z)
+
+    def vectorize(self):
+        return self.direction.vectorize() + [self.speed]
 
 
 def generate_random_rectangular_directed_mobility(width, height, depth, max_speed):

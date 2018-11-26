@@ -27,6 +27,10 @@ class Service:
         self.in_use = False
         self.user = None
 
+    def vectorize(self):
+        # TODO vector representation of services
+        return self.device.vectorize()
+
     def __str__(self):
         return "Service name {name}, type {type}, device {device} " \
                "at {coordinate}".format(name=self.name,
@@ -55,6 +59,9 @@ class Body:
 
     def move(self):
         self.mobility.update(self.coordinate)
+
+    def vectorize(self):
+        return self.coordinate.vectorize() + self.mobility.vectorize()
 
 
 class Device(Body):
