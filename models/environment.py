@@ -26,11 +26,19 @@ class Environment:
         pass
 
     @abstractmethod
+    def render(self):
+        pass
+
+    @abstractmethod
     def get_observation(self):
         pass
 
     @abstractmethod
-    def render(self):
+    def get_observation_size(self):
+        pass
+
+    @abstractmethod
+    def get_action_size(self):
         pass
 
 
@@ -112,9 +120,6 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
         for device in self.devices:
             device.move()
 
-    def get_observation(self):
-        return self.observation.get_observation(self.user, self.services)
-
     def step(self, action):
         """ receives selection result as a service instance """
         assert isinstance(action, Service)
@@ -132,3 +137,12 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
         print(self.user)
         for service in self.services:
             print(service)
+
+    def get_observation(self):
+        return self.observation.get_observation(self.user, self.services)
+
+    def get_observation_size(self):
+        pass
+
+    def get_action_size(self):
+        pass

@@ -1,6 +1,8 @@
 import datetime
 import random
 from abc import abstractmethod
+
+from reinforcement_learning.network import DRRN
 from models.environment import Environment
 
 
@@ -57,9 +59,11 @@ class NearestSelectionAgent(Agent):
         return services[0]
 
 
-class DQNSelectionAgent(Agent):
+class DRRNSelectionAgent(Agent):
     def __init__(self, env, num_episode, num_step):
         Agent.__init__(self, env, num_episode, num_step)
+
+        self.network = DRRN()
 
     def selection(self, user, services):
         pass
