@@ -14,7 +14,12 @@ class ExperienceMemory:
             # self.memory.pop(random.randrange(0, len(self.memory)))
             # FIFO
             self.memory.pop(0)
-        self.memory.append([observation, action, reward, next_observation])
+        self.memory.append({
+            "observation": observation,
+            "action": action,
+            "reward": reward,
+            "next_observation": next_observation
+        })
 
     def sample(self, batch_size):
         if 0 < len(self.memory) < batch_size:
