@@ -36,18 +36,10 @@ class DRRN(Network):
                 tf.reshape(self.user_observation, [1, self.observation_size]),
                 [num_actions, 1])
 
-            self.observation_hidden_layer_1 = layers.fully_connected(inputs=self.observation_tile,
-                                                                     num_outputs=128)
-            self.observation_hidden_layer_2 = layers.fully_connected(inputs=self.observation_hidden_layer_1,
-                                                                     num_outputs=128)
-            self.user_hidden_layer_output = layers.fully_connected(inputs=self.observation_hidden_layer_2,
+            self.user_hidden_layer_output = layers.fully_connected(inputs=self.observation_tile,
                                                                    num_outputs=128)
 
-            self.observation_action_layer_1 = layers.fully_connected(inputs=self.action_observation,
-                                                                     num_outputs=128)
-            self.observation_action_layer_2 = layers.fully_connected(inputs=self.observation_action_layer_1,
-                                                                     num_outputs=128)
-            self.action_hidden_layer_output = layers.fully_connected(inputs=self.observation_action_layer_2,
+            self.action_hidden_layer_output = layers.fully_connected(inputs=self.action_observation,
                                                                      num_outputs=128)
 
         """ combine observation and action """

@@ -23,7 +23,7 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
         
         Experiment done on the SingleUserSingleServicePartialObservable3DEnvironment
     """
-    def __init__(self, num_device, width, height, depth, max_speed, observation_range, num_episode, num_step, memory_size, batch_size):
+    def __init__(self, num_device, width, height, depth, max_speed, observation_range, num_episode, num_step, memory_size, batch_size, learning_rate, discount_factor):
         observation = EuclideanObservation(observation_range=observation_range)
         effectiveness = VisualEffectiveness()
         self.env = SingleUserSingleServicePartialObservable3DEnvironment(service_type='visual',
@@ -40,8 +40,8 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
         self.batch_size = batch_size
 
         self.agent = DRRNSelectionAgent(self.env, self.num_episode, self.num_step,
-                                        learning_rate=0.00000001,
-                                        discount_factor=1,
+                                        learning_rate=learning_rate,
+                                        discount_factor=discount_factor,
                                         memory_size=self.memory_size,
                                         batch_size=self.batch_size)
 
