@@ -187,4 +187,5 @@ fabric.properties
 .idea/vcs.xml
 .idea/misc.xml
 
+.idea/*
 summary/*
