@@ -11,7 +11,9 @@ from utils import variable_summaries
 
 
 class Agent:
-    def __init__(self, env, num_episode, num_step):
+    def __init__(self, name, env, num_episode, num_step):
+        self.name = name
+
         assert isinstance(env, Environment)
         self.env = env
 
@@ -87,6 +89,17 @@ class NearestSelectionAgent(Agent):
     def selection(self, sess, user, services):
         services.sort(key=lambda service: user.distance(service.device))
         return services[0], 0
+
+
+class NoHandoverSelectionAgent(Agent):
+    """ NoHandoverSelectionAgent: the baseline agent that minimizes the number of handovers """
+    def selection(self, sess, user, services):
+        for i in range(len(services)):
+            if services[i].in_use and services[i].user == user:
+                return services[i], i
+        """ if no service is currently in-use, select randomly """
+        index = random.choice(range(len(services)))
+        return services[index], index
 
 
 class DRRNSelectionAgent(Agent):
