@@ -79,6 +79,13 @@ class DRRNSelectionAgent(Agent):
         self.memory = ExperienceMemory(memory_size)
         self.batch_size = batch_size
 
+        """ Epsilon greedy configuration """
+        self.eps = 1.0
+        self.eps_counter = 0
+        self.eps_anneal_steps = 1000
+        self.eps_decay = 0.99
+        self.eps_final = 1e-2
+
         with tf.variable_scope("Summary"):
             """ Summary """
             self.loss_list = tf.placeholder(shape=[None], dtype=tf.float32, name="LossList")
@@ -88,18 +95,15 @@ class DRRNSelectionAgent(Agent):
             self.summary = tf.summary.merge_all()
 
     def selection(self, sess, user, services):
-        Q_set = self.network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
-        selection = np.argmax(Q_set)
+        if random.random() <= self.eps:
+            selection = random.choice(range(len(services)))
+        else:
+            Q_set = self.network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
+            selection = np.argmax(Q_set)
         return services[selection], selection
 
     def train(self, sess):
         print("Train phase")
-
-        # Epsilon greedy configuration
-        eps = 1.0
-        eps_anneal_steps = 1000
-        eps_decay = 0.99
-        eps_final = 1e-2
 
         writer = tf.summary.FileWriter('./summary/train/' + self.date, sess.graph)
 
@@ -112,11 +116,7 @@ class DRRNSelectionAgent(Agent):
 
             for i_step in range(self.num_step):
                 """ select action """
-                if random.random() <= eps:
-                    action_index = random.choice(range(len(observation["services"])))
-                    action = observation["services"][action_index]
-                else:
-                    action, action_index = self.selection(sess, observation["user"], observation["services"])
+                action, action_index = self.selection(sess, observation["user"], observation["services"])
 
                 """ perform the selected action on the environment """
                 next_observation, reward, done = self.env.step(action)
@@ -130,6 +130,12 @@ class DRRNSelectionAgent(Agent):
 
                 """ set observation to next state """
                 observation = next_observation
+                
+                """ epsilon """
+                self.eps_counter += 1
+                if self.eps_counter >= self.eps_anneal_steps and self.eps > self.eps_final:
+                    self.eps = self.eps_decay * self.eps
+                    self.eps_counter = 0
 
             self.summarize_episode(sess, writer, i_episode, loss_list, reward_list)
             print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
