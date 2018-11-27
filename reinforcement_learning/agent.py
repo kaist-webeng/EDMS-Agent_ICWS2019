@@ -134,7 +134,7 @@ class DRRNSelectionAgent(Agent):
     def train(self, sess):
         print("Train phase")
 
-        writer = tf.summary.FileWriter('./summary/{name}/train/{date{'.format(name=self.name, date=self.date),
+        writer = tf.summary.FileWriter('./summary/{name}/train/{date}'.format(name=self.name, date=self.date),
                                        sess.graph)
 
         for i_episode in range(self.num_episode):
