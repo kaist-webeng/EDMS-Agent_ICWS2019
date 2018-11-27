@@ -81,7 +81,7 @@ class DRRNSelectionAgent(Agent):
 
         with tf.variable_scope("Summary"):
             """ Summary """
-            self.loss_list = tf.placeholder(shape=[None, 1], dtype=tf.float32, name="LossList")
+            self.loss_list = tf.placeholder(shape=[None], dtype=tf.float32, name="LossList")
             variable_summaries(self.loss_list, "Loss")
             self.reward_list = tf.placeholder(shape=[None], dtype=tf.float32, name="RewardList")
             variable_summaries(self.reward_list, "Reward")

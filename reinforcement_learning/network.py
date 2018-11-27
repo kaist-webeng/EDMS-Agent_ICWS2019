@@ -60,8 +60,9 @@ class DRRN(Network):
             self.action = tf.placeholder(shape=[], dtype=tf.int32, name="action")
 
             """ only considers output that selected """
-            self.responsible_output = tf.gather(self.Q, self.action)
-            self.loss = tf.square(self.target - self.responsible_output)
+            self.action_one_hot = tf.one_hot(self.action, num_actions, dtype=tf.float32)
+            self.responsible_Q = tf.reduce_sum(tf.multiply(self.Q, self.action_one_hot))
+            self.loss = tf.square(self.target - self.responsible_Q)
             self.trainer = tf.train.AdamOptimizer(self.learning_rate)
             self.update_model = self.trainer.minimize(self.loss)
 
