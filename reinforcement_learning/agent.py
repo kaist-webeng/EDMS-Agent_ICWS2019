@@ -22,6 +22,14 @@ class Agent:
         # Date of now, for logging
         self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
+        with tf.variable_scope("Summary"):
+            """ Summary """
+            self.loss_list = tf.placeholder(shape=[None], dtype=tf.float32, name="LossList")
+            variable_summaries(self.loss_list, "Loss")
+            self.reward_list = tf.placeholder(shape=[None], dtype=tf.float32, name="RewardList")
+            variable_summaries(self.reward_list, "Reward")
+            self.summary = tf.summary.merge_all()
+
     @abstractmethod
     def selection(self, sess, user, services):
         """ return selected service object and its index """
@@ -33,10 +41,14 @@ class Agent:
 
     def test(self, sess):
         print("Test phase")
+
+        writer = tf.summary.FileWriter('./summary/{name}/test/{date}'.format(name=self.name, date=self.date),
+                                       sess.graph)
+
         for i_episode in range(self.num_episode):
             print("Episode %d" % i_episode)
 
-            score = 0.
+            reward_list = []
             observation = self.env.reset()
 
             """ since service selection is non-episodic task, restrict maximum step rather than observe done-signal """
@@ -46,9 +58,21 @@ class Agent:
                 """ perform the selected action on the environment """
                 observation, reward, done = self.env.step(action)
                 """ add reward to total score """
-                score += reward
+                reward_list.append(reward)
 
-            print("Episode %d ends with average score %f" % (i_episode, score / self.num_step))
+            self.summarize_episode(sess, writer, i_episode, [], reward_list)
+            print("Episode {i} ends with average score {reward}".format(i=i_episode,
+                                                                        reward=np.mean(reward_list)))
+
+    def summarize_episode(self, sess, writer, i_episode, loss_list, reward_list):
+        writer.add_summary(
+            sess.run(self.summary,
+                     feed_dict={
+                         self.loss_list: loss_list,
+                         self.reward_list: reward_list
+                     }),
+            i_episode
+        )
 
 
 class RandomSelectionAgent(Agent):
@@ -66,10 +90,10 @@ class NearestSelectionAgent(Agent):
 
 
 class DRRNSelectionAgent(Agent):
-    def __init__(self, env, num_episode, num_step, learning_rate, discount_factor, memory_size, batch_size):
-        Agent.__init__(self, env, num_episode, num_step)
+    def __init__(self, name, env, num_episode, num_step, learning_rate, discount_factor, memory_size, batch_size):
+        Agent.__init__(self, name, env, num_episode, num_step)
 
-        self.network = DRRN(name="test",
+        self.network = DRRN(name="DRRN",
                             learning_rate=learning_rate,
                             discount_factor=discount_factor,
                             observation_size=self.env.get_observation_size(),
@@ -82,17 +106,9 @@ class DRRNSelectionAgent(Agent):
         """ Epsilon greedy configuration """
         self.eps = 1.0
         self.eps_counter = 0
-        self.eps_anneal_steps = 1000
-        self.eps_decay = 0.99
+        self.eps_anneal_steps = 100
+        self.eps_decay = 0.9
         self.eps_final = 1e-2
-
-        with tf.variable_scope("Summary"):
-            """ Summary """
-            self.loss_list = tf.placeholder(shape=[None], dtype=tf.float32, name="LossList")
-            variable_summaries(self.loss_list, "Loss")
-            self.reward_list = tf.placeholder(shape=[None], dtype=tf.float32, name="RewardList")
-            variable_summaries(self.reward_list, "Reward")
-            self.summary = tf.summary.merge_all()
 
     def selection(self, sess, user, services):
         if random.random() <= self.eps:
@@ -105,7 +121,8 @@ class DRRNSelectionAgent(Agent):
     def train(self, sess):
         print("Train phase")
 
-        writer = tf.summary.FileWriter('./summary/train/' + self.date, sess.graph)
+        writer = tf.summary.FileWriter('./summary/{name}/train/{date{'.format(name=self.name, date=self.date),
+                                       sess.graph)
 
         for i_episode in range(self.num_episode):
             print("Episode %d" % i_episode)
@@ -156,13 +173,3 @@ class DRRNSelectionAgent(Agent):
                                           next_actions=[service.vectorize() for service in memory["next_observation"]["services"]])
             loss_list.append(loss)
         return loss_list
-
-    def summarize_episode(self, sess, writer, i_episode, loss_list, reward_list):
-        writer.add_summary(
-            sess.run(self.summary,
-                     feed_dict={
-                         self.loss_list: loss_list,
-                         self.reward_list: reward_list
-                     }),
-            i_episode
-        )
