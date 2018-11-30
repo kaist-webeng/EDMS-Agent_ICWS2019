@@ -127,6 +127,12 @@ class Quaternion:
     def vectorize(self):
         return [self.w, self.i, self.j, self.k]
 
+    def get_vector_part(self):
+        return Vector(self.i, self.j, self.k)
+
+    def get_scalar_part(self):
+        return self.w
+
     def __str__(self):
         return "(W:{w}, I:{i}, J:{j}, K:{k})".format(w=self.w, i=self.i, j=self.j, k=self.k)
 
