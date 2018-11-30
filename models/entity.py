@@ -105,5 +105,10 @@ class User(Body):
         assert isinstance(service, Service)
         self.service = service
 
+    def infer_orientation(self):
+        """ infer orientation of user head from mobility """
+        # TODO currently, simply returns direction of user mobility since usually user heads its direction
+        return Orientation(0, self.mobility.direction.x, self.mobility.direction.y, self.mobility.direction.z)
+
     def vectorize(self):
         return self.coordinate.vectorize() + self.mobility.vectorize()
