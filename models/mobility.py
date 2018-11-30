@@ -19,11 +19,11 @@ class Vector:
         self.y = y
         self.z = z
 
-    def __str__(self):
-        return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
-
     def vectorize(self):
         return [self.x, self.y, self.z]
+
+    def __str__(self):
+        return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
 
 
 class Coordinate(Vector):
@@ -101,3 +101,61 @@ def generate_random_rectangular_directed_mobility(width, height, depth, max_spee
     return RectangularDirectedMobility(width, height, depth,
                                        generate_random_direction(),
                                        random.random() * max_speed)
+
+
+class Quaternion:
+    """ Quaternion: class of 4-dimensional quaternion for Orientation and Rotation """
+    def __init__(self, w, i, j, k):
+        self.w = w
+        self.i = i
+        self.j = j
+        self.k = k
+
+    def get(self):
+        return self.w, self.i, self.j, self.k
+
+    def update(self, w, i, j, k):
+        self.w = w
+        self.i = i
+        self.j = j
+        self.k = k
+
+    def vectorize(self):
+        return [self.w, self.i, self.j, self.k]
+
+    def __str__(self):
+        return "(W:{w}, I:{i}, J:{j}, K:{k})".format(w=self.w, i=self.i, j=self.j, k=self.k)
+
+    def __mul__(self, other):
+        assert isinstance(other, Quaternion)
+        return Quaternion(
+            w=self.w*other.w - self.i*other.i - self.j*other.j - self.k*other.k,
+            i=self.w*other.i + self.i*other.w + self.j*other.k - self.k*other.j,
+            j=self.w*other.j - self.i*other.k + self.j*other.w + self.k*other.i,
+            k=self.w*other.k + self.i*other.j - self.j*other.i + self.k*other.w
+        )
+
+    def __rmul__(self, other):
+        assert isinstance(other, Quaternion)
+        return Quaternion(
+            w=other.w*self.w - other.i*self.i - other.j*self.j - other.k*self.k,
+            i=other.w*self.i + other.i*self.w + other.j*self.k - other.k*self.j,
+            j=other.w*self.j - other.i*self.k + other.j*self.w + other.k*self.i,
+            k=other.w*self.k + other.i*self.j - other.j*self.i + other.k*self.w
+        )
+
+
+class Orientation(Quaternion):
+    """ Orientation: class that represents orientation of a physical entity in a 3-dimensional space"""
+    def __init__(self, w, i, j, k):
+        """ Orientation should be a unit vector """
+        denominator = np.square(w) + np.square(i) + np.square(j) + np.square(k)
+        unit_w = np.sqrt(np.square(w) / denominator)
+        sign_w = 1 if w > 0 else -1
+        unit_i = np.sqrt(np.square(i)/denominator)
+        sign_i = 1 if i > 0 else -1
+        unit_j = np.sqrt(np.square(j)/denominator)
+        sign_j = 1 if j > 0 else -1
+        unit_k = np.sqrt(np.square(k)/denominator)
+        sign_k = 1 if k > 0 else -1
+        Quaternion.__init__(self, sign_w*unit_w, sign_i*unit_i, sign_j*unit_j, sign_k*unit_k)
