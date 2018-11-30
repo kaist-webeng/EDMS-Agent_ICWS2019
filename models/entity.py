@@ -1,4 +1,7 @@
-from models.mobility import Coordinate, Mobility
+import numpy as np
+from abc import abstractmethod
+
+from models.mobility import Coordinate, Mobility, Orientation
 
 
 class Service:
@@ -63,21 +66,29 @@ class Body:
     def move(self):
         self.mobility.update(self.coordinate)
 
+    @abstractmethod
     def vectorize(self):
-        return self.coordinate.vectorize() + self.mobility.vectorize()
+        return []
 
 
 class Device(Body):
     """ Device: a basic class that represents devices """
-    def __init__(self, name, device_type, coordinate, mobility):
+
+    def __init__(self, name, device_type, coordinate, mobility, orientation):
         Body.__init__(self, coordinate, mobility)
         self.name = name
         self.type = device_type
+
+        assert isinstance(orientation, Orientation)
+        self.orientation = orientation
 
     def __str__(self):
         return "Device {name}, type {type} at {coordinate}".format(name=self.name,
                                                                    type=self.type,
                                                                    coordinate=self.coordinate)
+
+    def vectorize(self):
+        return self.coordinate.vectorize() + self.mobility.vectorize() + self.orientation.vectorize()
 
 
 class User(Body):
@@ -93,3 +104,6 @@ class User(Body):
     def utilize(self, service):
         assert isinstance(service, Service)
         self.service = service
+
+    def vectorize(self):
+        return self.coordinate.vectorize() + self.mobility.vectorize()
