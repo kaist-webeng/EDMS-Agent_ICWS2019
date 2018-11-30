@@ -1,10 +1,7 @@
-import tensorflow as tf
-from abc import abstractmethod
-
 from models.effectiveness import VisualEffectiveness
 from models.environment import SingleUserSingleServicePartialObservableEnvironment
 from models.observation import EuclideanObservation
-from reinforcement_learning.agent import RandomSelectionAgent, NearestSelectionAgent, NoHandoverSelectionAgent, DRRNSelectionAgent
+from reinforcement_learning.agent import *
 
 
 class Experiment:
@@ -38,14 +35,18 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
         self.num_step = num_step
         self.memory_size = memory_size
         self.batch_size = batch_size
-        #self.agent = NoHandoverSelectionAgent("NoHandover", self.env, self.num_episode, self.num_step)
 
-        self.agent = DRRNSelectionAgent("DRRN",
+        random_agent = RandomSelectionAgent("Random", self.env, self.num_episode, self.num_step)
+        nearest_agent = NearestSelectionAgent("Nearest", self.env, self.num_episode, self.num_step)
+        no_handover_agent = NoHandoverSelectionAgent("NoHandover", self.env, self.num_episode, self.num_step)
+        greedy_agent = GreedySelectionAgent("Greedy", self.env, self.num_episode, self.num_step)
+        DRRN_agent = DRRNSelectionAgent("DRRN",
                                         self.env, self.num_episode, self.num_step,
                                         learning_rate=learning_rate,
                                         discount_factor=discount_factor,
                                         memory_size=self.memory_size,
                                         batch_size=self.batch_size)
+        self.agent = DRRN_agent
 
     def reset(self):
         self.env.reset()
