@@ -103,6 +103,14 @@ def generate_random_rectangular_directed_mobility(width, height, depth, max_spee
                                        random.random() * max_speed)
 
 
+class StaticMobility(Mobility):
+    def update(self, coordinate):
+        return coordinate
+
+    def vectorize(self):
+        return [0., 0., 0., 0.]
+
+
 class Quaternion:
     """ Quaternion: class of 4-dimensional quaternion for Orientation and Rotation """
     def __init__(self, w, i, j, k):
