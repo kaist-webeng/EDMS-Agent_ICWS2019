@@ -58,29 +58,28 @@ def generate_random_direction():
 
 class Mobility:
     """ Mobility: class that represents mobility of a physical entity """
-    pass
+    def __init__(self, direction, speed):
+        """ direction: direction of the mobility, Vector class """
+        assert isinstance(direction, Vector)
+        self.direction = direction
+        self.speed = speed
 
     @abstractmethod
     def update(self, coordinate):
         """ update: receives current coordinate and returns new """
         return coordinate
 
-    @abstractmethod
     def vectorize(self):
-        return []
+        return self.direction.vectorize() + [self.speed]
 
 
 class RectangularDirectedMobility(Mobility):
     """ RectangularDirectedMobility: mobility that has fixed direction and speed, restricted in a rectangular area"""
     def __init__(self, width, height, depth, direction, speed):
+        Mobility.__init__(self, direction, speed)
         self.width = width
         self.height = height
         self.depth = depth
-
-        """ direction: direction of the mobility, Direction class """
-        assert isinstance(direction, Direction)
-        self.direction = direction
-        self.speed = speed
 
     def update(self, coordinate):
         new_x = clamp(coordinate.x + self.direction.x * self.speed, 0, self.width)
@@ -93,9 +92,6 @@ class RectangularDirectedMobility(Mobility):
 
         coordinate.update(new_x, new_y, new_z)
 
-    def vectorize(self):
-        return self.direction.vectorize() + [self.speed]
-
 
 def generate_random_rectangular_directed_mobility(width, height, depth, max_speed):
     return RectangularDirectedMobility(width, height, depth,
@@ -104,11 +100,11 @@ def generate_random_rectangular_directed_mobility(width, height, depth, max_spee
 
 
 class StaticMobility(Mobility):
+    def __init__(self):
+        Mobility.__init__(self, Vector(0., 0., 0.), 0.)
+
     def update(self, coordinate):
         return coordinate
-
-    def vectorize(self):
-        return [0., 0., 0., 0.]
 
 
 class Quaternion:
