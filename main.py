@@ -13,7 +13,7 @@ def main():
                                                               num_step=100,
                                                               memory_size=100,
                                                               batch_size=100,
-                                                              learning_rate=0.00001,
+                                                              learning_rate=0.00000001,
                                                               discount_factor=1.)
     experiment.run()
 
