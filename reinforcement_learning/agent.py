@@ -78,27 +78,44 @@ class Agent:
 
 
 class RandomSelectionAgent(Agent):
-    """ RandomSelectionAgent: the baseline agent that selects services randomly """
+    """ RandomSelectionAgent: a baseline agent that selects services randomly """
     def selection(self, sess, user, services):
         index = random.choice(range(len(services)))
         return services[index], index
 
 
 class NearestSelectionAgent(Agent):
-    """ ClosestSelectionAgent: the baseline agent that selects the nearest service"""
+    """ ClosestSelectionAgent: a baseline agent that selects the nearest service"""
     def selection(self, sess, user, services):
-        services.sort(key=lambda service: user.distance(service.device))
-        return services[0], 0
+        minimum = 1000000
+        index = -1
+        for i in range(len(services)):
+            if user.distance(services[i].device) < minimum:
+                index = i
+                minimum = user.distance(services[i].device)
+        return services[index], index
 
 
 class NoHandoverSelectionAgent(Agent):
-    """ NoHandoverSelectionAgent: the baseline agent that minimizes the number of handovers """
+    """ NoHandoverSelectionAgent: a baseline agent that minimizes the number of handovers """
     def selection(self, sess, user, services):
         for i in range(len(services)):
             if services[i].in_use and services[i].user == user:
                 return services[i], i
         """ if no service is currently in-use, select randomly """
         index = random.choice(range(len(services)))
+        return services[index], index
+
+
+class GreedySelectionAgent(Agent):
+    """ GreedySelectionAgent: a baseline agent that selects best one currently """
+    def selection(self, sess, user, services):
+        maximum = -1000000
+        index = -1
+        for i in range(len(services)):
+            if self.env.effectiveness.measure(user, services[i]) > maximum:
+                index = i
+                maximum = self.env.effectiveness.measure(user, services[i])
         return services[index], index
 
 
