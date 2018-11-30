@@ -8,6 +8,27 @@ from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEff
 
 class Environment:
     """ Environment: abstract class of IoT environments for required methods """
+    def __init__(self, service_type, num_device, width, height, depth, effectiveness):
+        """ service_type: type of service to simulate """
+        self.service_type = service_type
+        """ num_device: number of devices """
+        self.num_device = num_device
+        """ width: x-axis size of the environment """
+        self.width = width
+        """ height: y-axis size of the environment """
+        self.height = height
+        """ depth: z-axis size of the environment """
+        self.depth = depth
+
+        """ effectiveness: effectiveness model """
+        assert isinstance(effectiveness, Effectiveness)
+        self.effectiveness = effectiveness
+
+        self.user = None
+        self.devices = []
+        self.services = []
+
+        self.reset()
 
     @abstractmethod
     def reset(self):
@@ -42,7 +63,7 @@ class Environment:
         pass
 
 
-class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
+class SingleUserSingleServicePartialObservableEnvironment(Environment):
     """
         SingleUserSingleServicePartialObservable3DEnvironment
         
@@ -53,31 +74,14 @@ class SingleUserSingleServicePartialObservable3DEnvironment(Environment):
             - 3-dimensional space
     """
     def __init__(self, service_type, num_device, width, height, depth, max_speed, observation, effectiveness):
-        """ service_type: type of service to simulate """
-        self.service_type = service_type
-        """ num_device: number of devices """
-        self.num_device = num_device
-        """ width: x-axis size of the environment """
-        self.width = width
-        """ height: y-axis size of the environment """
-        self.height = height
-        """ depth: z-axis size of the environment """
-        self.depth = depth
         """ max_speed: maximum speed that a mobile object can have """
         self.max_speed = max_speed
 
         """ observation: observation model, for distance-based partial observation """
         assert isinstance(observation, Observation)
         self.observation = observation
-        """ effectiveness: effectiveness model """
-        assert isinstance(effectiveness, Effectiveness)
-        self.effectiveness = effectiveness
 
-        self.user = None
-        self.devices = []
-        self.services = []
-
-        self.reset()
+        Environment.__init__(self, service_type, num_device, width, height, depth, effectiveness)
 
     def reset(self):
         self.devices = []

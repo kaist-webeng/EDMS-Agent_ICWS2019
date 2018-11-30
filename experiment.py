@@ -2,9 +2,9 @@ import tensorflow as tf
 from abc import abstractmethod
 
 from models.effectiveness import VisualEffectiveness
-from models.environment import SingleUserSingleServicePartialObservable3DEnvironment
+from models.environment import SingleUserSingleServicePartialObservableEnvironment
 from models.observation import EuclideanObservation
-from reinforcement_learning.agent import RandomSelectionAgent, DRRNSelectionAgent
+from reinforcement_learning.agent import RandomSelectionAgent, NearestSelectionAgent, NoHandoverSelectionAgent, DRRNSelectionAgent
 
 
 class Experiment:
@@ -26,20 +26,22 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
     def __init__(self, num_device, width, height, depth, max_speed, observation_range, num_episode, num_step, memory_size, batch_size, learning_rate, discount_factor):
         observation = EuclideanObservation(observation_range=observation_range)
         effectiveness = VisualEffectiveness()
-        self.env = SingleUserSingleServicePartialObservable3DEnvironment(service_type='visual',
-                                                                         num_device=num_device,
-                                                                         width=width,
-                                                                         height=height,
-                                                                         depth=depth,
-                                                                         max_speed=max_speed,
-                                                                         observation=observation,
-                                                                         effectiveness=effectiveness)
+        self.env = SingleUserSingleServicePartialObservableEnvironment(service_type='visual',
+                                                                       num_device=num_device,
+                                                                       width=width,
+                                                                       height=height,
+                                                                       depth=depth,
+                                                                       max_speed=max_speed,
+                                                                       observation=observation,
+                                                                       effectiveness=effectiveness)
         self.num_episode = num_episode
         self.num_step = num_step
         self.memory_size = memory_size
         self.batch_size = batch_size
+        #self.agent = NoHandoverSelectionAgent("NoHandover", self.env, self.num_episode, self.num_step)
 
-        self.agent = DRRNSelectionAgent(self.env, self.num_episode, self.num_step,
+        self.agent = DRRNSelectionAgent("DRRN",
+                                        self.env, self.num_episode, self.num_step,
                                         learning_rate=learning_rate,
                                         discount_factor=discount_factor,
                                         memory_size=self.memory_size,
