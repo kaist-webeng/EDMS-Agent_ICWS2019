@@ -155,15 +155,18 @@ class Quaternion:
 
 class Orientation(Quaternion):
     """ Orientation: class that represents orientation of a physical entity in a 3-dimensional space"""
-    def __init__(self, w, i, j, k):
+    def __init__(self, theta, i, j, k):
         """ Orientation should be a unit vector """
-        denominator = np.square(w) + np.square(i) + np.square(j) + np.square(k)
-        unit_w = np.sqrt(np.square(w) / denominator)
-        sign_w = 1 if w > 0 else -1
-        unit_i = np.sqrt(np.square(i)/denominator)
-        sign_i = 1 if i > 0 else -1
-        unit_j = np.sqrt(np.square(j)/denominator)
-        sign_j = 1 if j > 0 else -1
-        unit_k = np.sqrt(np.square(k)/denominator)
-        sign_k = 1 if k > 0 else -1
-        Quaternion.__init__(self, sign_w*unit_w, sign_i*unit_i, sign_j*unit_j, sign_k*unit_k)
+        denominator = np.square(i) + np.square(j) + np.square(k)
+
+        assert -2 * np.pi <= theta <= 2 * np.pi  # theta is radian
+        w = np.cos(theta/2)
+
+        unit_i = np.sqrt(np.square(i)/denominator) * np.sin(theta/2)
+        unit_j = np.sqrt(np.square(j)/denominator) * np.sin(theta/2)
+        unit_k = np.sqrt(np.square(k)/denominator) * np.sin(theta/2)
+        Quaternion.__init__(self, w, np.sign(i)*unit_i, np.sign(j)*unit_j, np.sign(k)*unit_k)
+
+
+def generate_random_orientation():
+    return Orientation(random.uniform(-2, 2)*np.pi, random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1))
