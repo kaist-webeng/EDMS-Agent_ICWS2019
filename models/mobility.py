@@ -22,8 +22,14 @@ class Vector:
     def vectorize(self):
         return [self.x, self.y, self.z]
 
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z
+
     def __str__(self):
         return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
+
+    def __neg__(self):
+        return Vector(-self.x, -self.y, -self.z)
 
 
 class Coordinate(Vector):
