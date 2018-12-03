@@ -36,12 +36,12 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
         self.memory_size = memory_size
         self.batch_size = batch_size
 
-        random_agent = RandomSelectionAgent("Random", self.env, self.num_episode, self.num_step)
-        nearest_agent = NearestSelectionAgent("Nearest", self.env, self.num_episode, self.num_step)
-        no_handover_agent = NoHandoverSelectionAgent("NoHandover", self.env, self.num_episode, self.num_step)
-        greedy_agent = GreedySelectionAgent("Greedy", self.env, self.num_episode, self.num_step)
-        DRRN_agent = DRRNSelectionAgent("DRRN",
-                                        self.env, self.num_episode, self.num_step,
+        """ In the code, only one agent should be constructed, Otherwise, error occurs in summary """
+        # random_agent = RandomSelectionAgent("Random", self.env, self.num_episode, self.num_step)
+        # nearest_agent = NearestSelectionAgent("Nearest", self.env, self.num_episode, self.num_step)
+        # no_handover_agent = NoHandoverSelectionAgent("NoHandover", self.env, self.num_episode, self.num_step)
+        # greedy_agent = GreedySelectionAgent("Greedy", self.env, self.num_episode, self.num_step)
+        DRRN_agent = DRRNSelectionAgent("DRRN", self.env, self.num_episode, self.num_step,
                                         learning_rate=learning_rate,
                                         discount_factor=discount_factor,
                                         memory_size=self.memory_size,
