@@ -25,6 +25,9 @@ class Vector:
     def dot(self, other):
         return self.x * other.x + self.y * other.y + self.z * other.z
 
+    def size(self):
+        return np.sqrt(np.square(self.x) + np.square(self.y) + np.square(self.z))
+
     def __str__(self):
         return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
 

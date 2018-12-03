@@ -33,6 +33,18 @@ class VisualEffectiveness(Effectiveness):
             https://en.wikipedia.org/wiki/Visual_acuity 
         """
         if visual_angle < 5/60:
-            return 0.0
+            return 0
+
+        """ Orientation """
+        """
+            face of the visual display should be opposite of the user's face
+        """
+        user_face = user.infer_orientation()
+        device_face = service.device.orientation.face.get_vector_part()
+        cosine = user_face.dot(device_face) / (user_face.size() * device_face.size())
+        
+        if cosine < 0.5:
+            # angle between user sight and device face is larger than 60 degree
+            return 0
 
         return 1
