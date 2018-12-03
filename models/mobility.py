@@ -133,6 +133,12 @@ class Quaternion:
     def get_scalar_part(self):
         return self.w
 
+    def get_conjugate(self):
+        return Quaternion(self.w, -self.i, -self.j, -self.k)
+
+    def is_unit(self):
+        return np.square(self.w) + np.square(self.i) + np.square(self.j) + np.square(self.k) == 1.
+
     def __str__(self):
         return "(W:{w}, I:{i}, J:{j}, K:{k})".format(w=self.w, i=self.i, j=self.j, k=self.k)
 
@@ -155,19 +161,43 @@ class Quaternion:
         )
 
 
-class Orientation(Quaternion):
-    """ Orientation: class that represents orientation of a physical entity in a 3-dimensional space"""
+class Rotation(Quaternion):
+    """ Rotation: class of rotation quaternion, receives axis and angle, then construct unit rotation vector """
     def __init__(self, theta, i, j, k):
-        """ Orientation should be a unit vector """
-        denominator = np.square(i) + np.square(j) + np.square(k)
-
         assert -2 * np.pi <= theta <= 2 * np.pi  # theta is radian
-        w = np.cos(theta/2)
 
-        unit_i = np.sqrt(np.square(i)/denominator) * np.sin(theta/2)
-        unit_j = np.sqrt(np.square(j)/denominator) * np.sin(theta/2)
-        unit_k = np.sqrt(np.square(k)/denominator) * np.sin(theta/2)
-        Quaternion.__init__(self, w, np.sign(i)*unit_i, np.sign(j)*unit_j, np.sign(k)*unit_k)
+        """ Rotation should be a unit vector """
+        denominator = np.square(i) + np.square(j) + np.square(k)
+        Quaternion.__init__(
+            self,
+            w=np.cos(theta / 2),
+            i=np.sign(i) * np.sqrt(np.square(i) / denominator) * np.sin(theta / 2),
+            j=np.sign(j) * np.sqrt(np.square(j) / denominator) * np.sin(theta / 2),
+            k=np.sign(k) * np.sqrt(np.square(k) / denominator) * np.sin(theta / 2)
+        )
+
+    def rotate(self, quaternion):
+        return self * quaternion * self.get_conjugate()
+
+
+class Orientation:
+    """
+        Orientation: class that represents orientation of a physical entity in a 3-dimensional space
+        to un-ambiguously state orientation and head of a body,
+        orientation receives a Quaternion and rotate vectors (1, 0, 0) and (0, 0, 1) according to the Quaternion,
+        where each vector is face and head, respectively
+    """
+    def __init__(self, theta, i, j, k):
+        rotation = Rotation(theta, i, j, k)
+
+        default_face = Quaternion(0, 1, 0, 0)  # x-axis direction
+        default_head = Quaternion(0, 0, 0, 1)  # z-axis direction
+
+        self.face = rotation.rotate(default_face)
+        self.head = rotation.rotate(default_head)
+
+    def vectorize(self):
+        return self.face.get_vector_part().vectorize() + self.head.get_vector_part().vectorize()
 
 
 def generate_random_orientation():
