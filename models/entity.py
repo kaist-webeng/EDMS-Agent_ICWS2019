@@ -1,7 +1,8 @@
 import numpy as np
 from abc import abstractmethod
 
-from models.mobility import Coordinate, Mobility, Orientation
+from models.mobility import Coordinate, Mobility
+from models.orientation import Orientation
 
 
 class Service:

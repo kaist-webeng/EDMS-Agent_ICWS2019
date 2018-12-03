@@ -1,7 +1,8 @@
 from abc import abstractmethod
 
 from models.entity import User, Device, Service
-from models.mobility import generate_random_coordinate, generate_random_rectangular_directed_mobility, generate_random_orientation
+from models.mobility import generate_random_coordinate, generate_random_rectangular_directed_mobility
+from models.orientation import generate_random_orientation
 from models.observation import Observation
 from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEffectiveness
 
