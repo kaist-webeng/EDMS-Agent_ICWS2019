@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import datetime
 import random
+import time
 from abc import abstractmethod
 
 from reinforcement_learning.network import DRRN
@@ -30,6 +31,8 @@ class Agent:
             variable_summaries(self.loss_list, "Loss")
             self.reward_list = tf.placeholder(shape=[None], dtype=tf.float32, name="RewardList")
             variable_summaries(self.reward_list, "Reward")
+            self.execution_time_list = tf.placeholder(shape=[None], dtype=tf.float32, name="ExecutionTImeList")
+            variable_summaries(self.execution_time_list, "ExecutionTime")
             self.summary = tf.summary.merge_all()
 
     @abstractmethod
@@ -51,27 +54,31 @@ class Agent:
             print("Episode %d" % i_episode)
 
             reward_list = []
+            execution_time_list = []
             observation = self.env.reset()
 
             """ since service selection is non-episodic task, restrict maximum step rather than observe done-signal """
             for i_step in range(self.num_step):
+                start_time = time.time()
                 """ select action """
                 action, _ = self.selection(sess, observation["user"], observation["services"])
+                execution_time_list.append(time.time() - start_time)
                 """ perform the selected action on the environment """
                 observation, reward, done = self.env.step(action)
                 """ add reward to total score """
                 reward_list.append(reward)
 
-            self.summarize_episode(sess, writer, i_episode, [], reward_list)
+            self.summarize_episode(sess, writer, i_episode, [], reward_list, execution_time_list)
             print("Episode {i} ends with average score {reward}".format(i=i_episode,
                                                                         reward=np.mean(reward_list)))
 
-    def summarize_episode(self, sess, writer, i_episode, loss_list, reward_list):
+    def summarize_episode(self, sess, writer, i_episode, loss_list, reward_list, execution_time_list):
         writer.add_summary(
             sess.run(self.summary,
                      feed_dict={
                          self.loss_list: loss_list,
-                         self.reward_list: reward_list
+                         self.reward_list: reward_list,
+                         self.execution_time_list: execution_time_list
                      }),
             i_episode
         )
@@ -159,11 +166,14 @@ class DRRNSelectionAgent(Agent):
 
             reward_list = []
             loss_list = []
+            execution_time_list = []
             observation = self.env.reset()
 
             for i_step in range(self.num_step):
+                start_time = time.time()
                 """ select action """
                 action, action_index = self.selection(sess, observation["user"], observation["services"])
+                execution_time_list.append(time.time() - start_time)
 
                 """ perform the selected action on the environment """
                 next_observation, reward, done = self.env.step(action)
@@ -184,7 +194,7 @@ class DRRNSelectionAgent(Agent):
                     self.eps = self.eps_decay * self.eps
                     self.eps_counter = 0
 
-            self.summarize_episode(sess, writer, i_episode, loss_list, reward_list)
+            self.summarize_episode(sess, writer, i_episode, loss_list, reward_list, execution_time_list)
             print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
                                                                                      reward=np.mean(reward_list),
                                                                                      loss=np.mean(loss_list)))
