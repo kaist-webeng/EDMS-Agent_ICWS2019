@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from models.entity import User, Device, Service
-from models.mobility import generate_random_coordinate, generate_random_rectangular_directed_mobility
+from models.mobility import generate_random_coordinate, generate_random_rectangular_directed_mobility, StaticMobility
 from models.orientation import generate_random_orientation
 from models.observation import Observation
 from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEffectiveness
@@ -101,10 +101,11 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
             new_device = Device(name=i,
                                 device_type=self.service_type,
                                 coordinate=generate_random_coordinate(self.width, self.height, self.depth),
-                                mobility=generate_random_rectangular_directed_mobility(self.width,
-                                                                                       self.height,
-                                                                                       self.depth,
-                                                                                       self.max_speed),
+                                mobility=StaticMobility(),
+                                #mobility=generate_random_rectangular_directed_mobility(self.width,
+                                #                                                       self.height,
+                                #                                                       self.depth,
+                                #                                                       self.max_speed),
                                 orientation=generate_random_orientation())
             new_service = Service(name=i,
                                   service_type=self.service_type,
