@@ -21,3 +21,11 @@ class EuclideanObservation(Observation):
             "user": user,
             "services": service_observation
         }
+
+
+class FullObservation(Observation):
+    def get_observation(self, user, services):
+        return {
+            "user": user,
+            "services": services
+        }
