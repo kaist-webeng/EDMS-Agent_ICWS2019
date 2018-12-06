@@ -161,6 +161,8 @@ class DRRNSelectionAgent(Agent):
         writer = tf.summary.FileWriter('./summary/{name}/train/{date}'.format(name=self.name, date=self.date),
                                        sess.graph)
 
+        stop_training_threshold = 5
+
         for i_episode in range(self.num_episode):
             print("Episode %d" % i_episode)
 
@@ -198,6 +200,11 @@ class DRRNSelectionAgent(Agent):
             print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
                                                                                      reward=np.mean(reward_list),
                                                                                      loss=np.mean(loss_list)))
+            if loss_list and np.max(loss_list) < stop_training_threshold:
+                print("Stop training")
+                self.eps = 0
+                return
+        self.eps = 0  # for further test phase
 
     def learn(self, sess):
         batch = self.memory.sample(self.batch_size)
