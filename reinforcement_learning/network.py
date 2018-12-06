@@ -37,13 +37,17 @@ class DRRN(Network):
         """ hidden layers """
         with tf.variable_scope("Hidden"):
             self.user_hidden_layer_1 = layers.fully_connected(inputs=self.observation_tile,
+                                                              activation_fn=tf.nn.tanh,
                                                               num_outputs=256)
             self.user_hidden_layer_output = layers.fully_connected(inputs=self.user_hidden_layer_1,
+                                                                   activation_fn=tf.nn.tanh,
                                                                    num_outputs=256)
 
             self.action_hidden_layer_1 = layers.fully_connected(inputs=self.action_set,
+                                                                activation_fn=tf.nn.tanh,
                                                                 num_outputs=256)
             self.action_hidden_layer_output = layers.fully_connected(inputs=self.action_hidden_layer_1,
+                                                                     activation_fn=tf.nn.tanh,
                                                                      num_outputs=256)
 
         """ combine observation and action """
