@@ -111,10 +111,16 @@ class RectangularDirectedMobility(Mobility):
         coordinate.update(new_x, new_y, new_z)
 
 
-def generate_random_rectangular_directed_mobility(width, height, depth, max_speed):
+def generate_random_direction_random_speed_mobility(width, height, depth, max_speed):
     return RectangularDirectedMobility(width, height, depth,
                                        generate_random_direction(),
                                        random.random() * max_speed)
+
+
+def generate_random_direction_specific_speed_mobility(width, height, depth, speed):
+    return RectangularDirectedMobility(width, height, depth,
+                                       generate_random_direction(),
+                                       speed)
 
 
 class StaticMobility(Mobility):

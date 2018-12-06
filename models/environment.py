@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from models.entity import User, Device, Service
-from models.mobility import generate_random_coordinate, generate_random_rectangular_directed_mobility, StaticMobility
+from models.mobility import generate_random_coordinate, generate_random_direction_random_speed_mobility, StaticMobility, generate_random_direction_specific_speed_mobility
 from models.orientation import generate_random_orientation, generate_vertical_orientation
 from models.observation import Observation
 from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEffectiveness
@@ -91,10 +91,10 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
         """ Reset user """
         self.user = User(uid=0,
                          coordinate=generate_random_coordinate(self.width, self.height, self.depth),
-                         mobility=generate_random_rectangular_directed_mobility(self.width,
-                                                                                self.height,
-                                                                                self.depth,
-                                                                                self.max_speed))
+                         mobility=generate_random_direction_specific_speed_mobility(self.width,
+                                                                                    self.height,
+                                                                                    self.depth,
+                                                                                    self.max_speed))
         """ Reset devices and services in the environment """
         for i in range(self.num_device):
             # TODO currently, service is a simple encapsulation of device functionality, so device_type == service_type
