@@ -1,6 +1,6 @@
 from models.effectiveness import VisualEffectiveness
 from models.environment import SingleUserSingleServicePartialObservableEnvironment
-from models.observation import EuclideanObservation
+from models.observation import EuclideanObservation, FullObservation
 from reinforcement_learning.agent import *
 
 
@@ -21,7 +21,8 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
         Experiment done on the SingleUserSingleServicePartialObservable3DEnvironment
     """
     def __init__(self, num_device, width, height, depth, max_speed, observation_range, num_episode, num_step, memory_size, batch_size, learning_rate, discount_factor):
-        observation = EuclideanObservation(observation_range=observation_range)
+        # observation = EuclideanObservation(observation_range=observation_range)
+        observation = FullObservation()
         effectiveness = VisualEffectiveness()
         self.env = SingleUserSingleServicePartialObservableEnvironment(service_type='visual',
                                                                        num_device=num_device,
