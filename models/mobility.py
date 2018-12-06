@@ -34,6 +34,15 @@ class Vector:
     def __neg__(self):
         return Vector(-self.x, -self.y, -self.z)
 
+    def __mul__(self, other):
+        return Vector(self.x * other, self.y * other, self.z * other)
+
+    def __rmul__(self, other):
+        return Vector(other * self.x, other * self.y, other * self.z)
+
+    def __eq__(self, other):
+        return isinstance(other, Vector) and self.x == other.x and self.y == other.y and self.z == other.z
+
 
 class Coordinate(Vector):
     """ Coordinate: class that represents coordinate of a physical entity in a 3-dimensional space """
@@ -79,7 +88,7 @@ class Mobility:
         return coordinate
 
     def vectorize(self):
-        return self.direction.vectorize() + [self.speed]
+        return self.speed * self.direction.vectorize()
 
 
 class RectangularDirectedMobility(Mobility):

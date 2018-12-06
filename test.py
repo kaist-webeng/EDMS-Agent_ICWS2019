@@ -1,7 +1,9 @@
 import numpy as np
+import random
 from abc import abstractmethod
 
-from models.mobility import Quaternion, Rotation
+from models.orientation import Quaternion, Rotation
+from models.mobility import Vector
 
 
 class Test:
@@ -22,6 +24,13 @@ class QuaternionRotationTest(Test):
         print(rotation.rotate(head))
 
 
+class VectorMultiplicationTest(Test):
+    def run(self):
+        v = Vector(random.random(), random.random(), random.random())
+        m = random.randint(1, 5)
+        print(v, m, v * m, m * v, v*m == m*v)
+
+
 if __name__ == '__main__':
-    test = QuaternionRotationTest()
+    test = VectorMultiplicationTest()
     test.run()
