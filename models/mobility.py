@@ -88,7 +88,7 @@ class Mobility:
         return coordinate
 
     def vectorize(self):
-        return self.speed * self.direction.vectorize()
+        return (self.speed * self.direction).vectorize()
 
 
 class RectangularDirectedMobility(Mobility):
