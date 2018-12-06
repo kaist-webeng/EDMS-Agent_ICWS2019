@@ -161,7 +161,7 @@ class DRRNSelectionAgent(Agent):
         writer = tf.summary.FileWriter('./summary/{name}/train/{date}'.format(name=self.name, date=self.date),
                                        sess.graph)
 
-        stop_training_threshold = 5
+        stop_training_threshold = 1
 
         for i_episode in range(self.num_episode):
             print("Episode %d" % i_episode)
