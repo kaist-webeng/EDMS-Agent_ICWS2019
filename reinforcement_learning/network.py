@@ -23,25 +23,25 @@ class DRRN(Network):
 
         """ State/observation """
         with tf.variable_scope("Observation"):
-            self.user_observation = tf.placeholder(shape=[self.observation_size], dtype=tf.float32,
-                                                   name="observation")
+            self.observation = tf.placeholder(shape=[self.observation_size], dtype=tf.float32,
+                                              name="observation")
 
-            self.action_observation = tf.placeholder(shape=[None, self.action_size], dtype=tf.float32,
-                                                     name="action")
-            num_actions = tf.shape(self.action_observation)[0]
+            self.action_set = tf.placeholder(shape=[None, self.action_size], dtype=tf.float32,
+                                             name="action")
+            num_actions = tf.shape(self.action_set)[0]
+
+            self.observation_tile = tf.tile(
+                tf.reshape(self.observation, [1, self.observation_size]),
+                [num_actions, 1])
 
         """ hidden layers """
         with tf.variable_scope("Hidden"):
-            self.observation_tile = tf.tile(
-                tf.reshape(self.user_observation, [1, self.observation_size]),
-                [num_actions, 1])
-
             self.user_hidden_layer_1 = layers.fully_connected(inputs=self.observation_tile,
                                                               num_outputs=256)
             self.user_hidden_layer_output = layers.fully_connected(inputs=self.user_hidden_layer_1,
                                                                    num_outputs=256)
 
-            self.action_hidden_layer_1 = layers.fully_connected(inputs=self.action_observation,
+            self.action_hidden_layer_1 = layers.fully_connected(inputs=self.action_set,
                                                                 num_outputs=256)
             self.action_hidden_layer_output = layers.fully_connected(inputs=self.action_hidden_layer_1,
                                                                      num_outputs=256)
@@ -73,8 +73,8 @@ class DRRN(Network):
     def sample(self, sess, observation, actions):
         """ calculate Q value of given observation and action """
         return sess.run(self.Q, feed_dict={
-            self.user_observation: observation,
-            self.action_observation: actions
+            self.observation: observation,
+            self.action_set: actions
         })
 
     def update(self, sess, observation, actions, action, reward, next_observation, next_actions):
@@ -83,8 +83,8 @@ class DRRN(Network):
         return sess.run(
             (self.loss, self.update_model),
             feed_dict={
-                self.user_observation: observation,
-                self.action_observation: actions,
+                self.observation: observation,
+                self.action_set: actions,
                 self.action: action,
                 self.target: target
             }
