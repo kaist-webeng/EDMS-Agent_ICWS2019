@@ -32,6 +32,10 @@ class Vector:
         assert isinstance(target, Vector)
         return (self.dot(target) / target.size()) * (target / target.size())
 
+    def scalar_projection(self, target):
+        assert isinstance(target, Vector)
+        return self.dot(target) / target.size()
+
     def __str__(self):
         return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
 
