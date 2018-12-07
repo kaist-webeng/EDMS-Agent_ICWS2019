@@ -6,7 +6,7 @@ def clamp(value, min_value, max_value):
 
 
 def variable_summaries(var, varname):
-    with tf.name_scope('summaries-'+varname):
+    with tf.name_scope(varname):
         mean = tf.reduce_mean(var)
         tf.summary.scalar('mean', mean)
         stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
