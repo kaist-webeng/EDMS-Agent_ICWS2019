@@ -1,6 +1,5 @@
 import tensorflow as tf
 import numpy as np
-import tensorflow.contrib.layers as layers
 from abc import abstractmethod
 
 
@@ -36,19 +35,19 @@ class DRRN(Network):
 
         """ hidden layers """
         with tf.variable_scope("Hidden"):
-            self.user_hidden_layer_1 = layers.fully_connected(inputs=self.observation_tile,
-                                                              activation_fn=tf.nn.tanh,
-                                                              num_outputs=256)
-            self.user_hidden_layer_output = layers.fully_connected(inputs=self.user_hidden_layer_1,
-                                                                   activation_fn=tf.nn.tanh,
-                                                                   num_outputs=256)
+            self.user_hidden_layer_1 = tf.layers.dense(inputs=self.observation_tile,
+                                                       activation=tf.nn.tanh,
+                                                       units=256)
+            self.user_hidden_layer_output = tf.layers.dense(inputs=self.user_hidden_layer_1,
+                                                            activation=tf.nn.tanh,
+                                                            units=256)
 
-            self.action_hidden_layer_1 = layers.fully_connected(inputs=self.action_set,
-                                                                activation_fn=tf.nn.tanh,
-                                                                num_outputs=256)
-            self.action_hidden_layer_output = layers.fully_connected(inputs=self.action_hidden_layer_1,
-                                                                     activation_fn=tf.nn.tanh,
-                                                                     num_outputs=256)
+            self.action_hidden_layer_1 = tf.layers.dense(inputs=self.action_set,
+                                                         activation=tf.nn.tanh,
+                                                         units=256)
+            self.action_hidden_layer_output = tf.layers.dense(inputs=self.action_hidden_layer_1,
+                                                              activation=tf.nn.tanh,
+                                                              units=256)
 
         """ combine observation and action """
         self.combine = tf.concat(
@@ -57,10 +56,10 @@ class DRRN(Network):
             axis=1
         )
 
-        self.Q = layers.fully_connected(inputs=self.combine,
-                                        num_outputs=1,
-                                        activation_fn=None,
-                                        biases_initializer=None)
+        self.Q = tf.layers.dense(inputs=self.combine,
+                                 units=1,
+                                 activation=None,
+                                 bias_initializer=None)
 
         with tf.variable_scope("Training"):
             """ Training """
