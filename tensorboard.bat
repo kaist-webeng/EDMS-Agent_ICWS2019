@@ -1,1 +1,0 @@
-python -m tensorboard.main --logdir="E:\PyCharm Projects\IoT-service-simulation\summary"
