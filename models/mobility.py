@@ -28,6 +28,10 @@ class Vector:
     def size(self):
         return np.sqrt(np.square(self.x) + np.square(self.y) + np.square(self.z))
 
+    def projection(self, target):
+        assert isinstance(target, Vector)
+        return (self.dot(target) / target.size()) * (target / target.size())
+
     def __str__(self):
         return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
 
@@ -51,6 +55,9 @@ class Vector:
 
     def __rmul__(self, other):
         return Vector(other * self.x, other * self.y, other * self.z)
+
+    def __truediv__(self, other):
+        return Vector(self.x / other, self.y / other, self.z / other)
 
     def __eq__(self, other):
         return isinstance(other, Vector) and self.x == other.x and self.y == other.y and self.z == other.z

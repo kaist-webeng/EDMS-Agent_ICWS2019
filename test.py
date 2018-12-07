@@ -24,13 +24,30 @@ class QuaternionRotationTest(Test):
         print(rotation.rotate(head))
 
 
-class VectorMultiplicationTest(Test):
+class VectorOperationTest(Test):
     def run(self):
-        v = Vector(random.random(), random.random(), random.random())
+        """ Multiplication within an integer """
+        v1 = Vector(random.random(), random.random(), random.random())
         m = random.randint(1, 5)
-        print(v, m, v * m, m * v, v*m == m*v)
+        print(v1, m, v1 * m, m * v1, v1*m == m*v1)
+
+        """ Division within a float """
+        print(v1, m, v1 / m)
+
+        """ Addition """
+        v2 = Vector(random.random(), random.random(), random.random())
+        print(v1, v2, v1 + v2, v2 + v1)
+
+        """ Subtraction """
+        print(v1, v2, v1 - v2, v2 - v1)
+
+        """ Projection """
+        projection = v1.projection(v2)
+        print(projection.x, v2.x, projection.x / v2.x)
+        print(projection.y, v2.y, projection.y / v2.y)
+        print(projection.z, v2.z, projection.z / v2.z)
 
 
 if __name__ == '__main__':
-    test = VectorMultiplicationTest()
+    test = VectorOperationTest()
     test.run()
