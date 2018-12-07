@@ -189,3 +189,4 @@ fabric.properties
 
 .idea/*
 summary/*
+tensorboard.bat
