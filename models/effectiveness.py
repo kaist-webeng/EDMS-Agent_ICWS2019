@@ -37,6 +37,14 @@ class VisualEffectiveness(Effectiveness):
         if visual_angle < 5/60:
             return 0
 
+        """ User position """
+        """"
+            User should be in front of the display
+        """
+        relative_coordinate = user.coordinate - service.device.coordinate
+        if relative_coordinate.scalar_projection(service.device.orientation.face.get_vector_part()) < 0:
+            return -1
+
         """ Orientation """
         """
             face of the visual display should be opposite of the user's face
