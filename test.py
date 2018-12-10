@@ -42,10 +42,13 @@ class VectorOperationTest(Test):
         print(v1, v2, v1 - v2, v2 - v1)
 
         """ Projection """
-        projection = v1.projection(v2)
-        print(projection.x, v2.x, projection.x / v2.x)
-        print(projection.y, v2.y, projection.y / v2.y)
-        print(projection.z, v2.z, projection.z / v2.z)
+        x = Vector(1, 1, 1)
+        y = Vector(1, 0, 1)
+        projection = x.projection(y)
+        print(x)
+        print(y)
+        print(projection)
+        print(x.scalar_projection(y))
 
 
 if __name__ == '__main__':
