@@ -142,10 +142,9 @@ class DRRNSelectionAgent(Agent):
 
         """ Epsilon greedy configuration """
         self.eps = 1.0
-        self.eps_counter = 0
-        self.eps_anneal_steps = 100
-        self.eps_decay = 0.9
         self.eps_final = 1e-2
+        # set decaying rate according to the number of episodes: to make epsilon reaches eps_final at the end
+        self.eps_decay = np.power(self.eps_final, 1 / self.num_episode)
 
     def selection(self, sess, user, services):
         if random.random() <= self.eps:
@@ -190,11 +189,9 @@ class DRRNSelectionAgent(Agent):
                 """ set observation to next state """
                 observation = next_observation
                 
-                """ epsilon """
-                self.eps_counter += 1
-                if self.eps_counter >= self.eps_anneal_steps and self.eps > self.eps_final:
-                    self.eps = self.eps_decay * self.eps
-                    self.eps_counter = 0
+            """ epsilon decaying for each episode """
+            if self.eps > self.eps_final:
+                self.eps = self.eps_decay * self.eps
 
             self.summarize_episode(sess, writer, i_episode, loss_list, reward_list, execution_time_list)
             print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
