@@ -14,7 +14,8 @@ def main():
                                                               memory_size=100,
                                                               batch_size=100,
                                                               learning_rate=0.00000001,
-                                                              discount_factor=1.)
+                                                              discount_factor=1.,
+                                                              agent="DRRN")
     experiment.run()
 
 
