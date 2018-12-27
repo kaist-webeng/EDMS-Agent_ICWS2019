@@ -43,7 +43,7 @@ class VisualEffectiveness(Effectiveness):
         """
         relative_coordinate = user.coordinate - service.device.coordinate
         if relative_coordinate.scalar_projection(service.device.orientation.face.get_vector_part()) < 0:
-            return -1
+            return 0
 
         """ Orientation """
         """
@@ -51,8 +51,8 @@ class VisualEffectiveness(Effectiveness):
         """
         user_face = user.infer_orientation()
         device_face = service.device.orientation.face.get_vector_part()
-        cosine_face_angle = user_face.dot(device_face) / (user_face.size() * device_face.size())
-        if cosine_face_angle < 0:
+        cosine_face_angle = user_face.dot(-device_face) / (user_face.size() * device_face.size())
+        if user_face.scalar_projection(-device_face) < 0:
             # angle between user sight and device face is larger than 60 degree
             return 0
 
@@ -64,6 +64,7 @@ class VisualEffectiveness(Effectiveness):
         cosine_head_angle = user_head.dot(device_head) / (user_head.size() * device_head.size())
         if cosine_head_angle < 0:
             # angle between user head and device head is larger than 60 degree
-            return 0
+            # return 0
+            pass  # skip orientation check
 
         return 1
