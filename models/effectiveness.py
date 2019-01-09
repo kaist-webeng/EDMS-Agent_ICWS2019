@@ -20,10 +20,6 @@ class DistanceEffectiveness(Effectiveness):
 class VisualEffectiveness(Effectiveness):
     """ VisualEffectiveness: effectiveness model for visual services """
     def measure(self, user, service, context=None):
-        """ Handover """
-        if not (service.in_use and service.user == user):
-            return -1
-
         """ Visual angle """
         """ 
             6/6 vision is defined as: at 6 m distance, human can recognize 5 arc-min letter.

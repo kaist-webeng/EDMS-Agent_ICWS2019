@@ -5,11 +5,12 @@ from models.mobility import generate_random_coordinate, generate_random_directio
 from models.orientation import generate_random_orientation, generate_vertical_orientation
 from models.observation import Observation
 from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEffectiveness
+from reinforcement_learning.reward import Reward
 
 
 class Environment:
     """ Environment: abstract class of IoT environments for required methods """
-    def __init__(self, service_type, num_device, width, height, depth, effectiveness):
+    def __init__(self, service_type, num_device, width, height, depth, reward):
         """ service_type: type of service to simulate """
         self.service_type = service_type
         """ num_device: number of devices """
@@ -21,9 +22,9 @@ class Environment:
         """ depth: z-axis size of the environment """
         self.depth = depth
 
-        """ effectiveness: effectiveness model """
-        assert isinstance(effectiveness, Effectiveness)
-        self.effectiveness = effectiveness
+        """ reward: reward model """
+        assert isinstance(reward, Reward)
+        self.reward = reward
 
         self.user = None
         self.devices = []
@@ -74,7 +75,7 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
             - Partial observation based on Euclidean-distance
             - 3-dimensional space
     """
-    def __init__(self, service_type, num_device, width, height, depth, max_speed, observation, effectiveness):
+    def __init__(self, service_type, num_device, width, height, depth, max_speed, observation, reward):
         """ max_speed: maximum speed that a mobile object can have """
         self.max_speed = max_speed
 
@@ -82,7 +83,7 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
         assert isinstance(observation, Observation)
         self.observation = observation
 
-        Environment.__init__(self, service_type, num_device, width, height, depth, effectiveness)
+        Environment.__init__(self, service_type, num_device, width, height, depth, reward)
 
     def reset(self):
         self.devices = []
@@ -137,7 +138,7 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
         assert isinstance(action, Service)
 
         done = False
-        reward = self.effectiveness.measure(self.user, action)
+        reward = self.reward.measure(self.user, action)
 
         # Release service and acquire new
         if self.user.service:
