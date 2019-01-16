@@ -2,7 +2,7 @@ from models.effectiveness import VisualEffectiveness
 from models.environment import SingleUserSingleServicePartialObservableEnvironment
 from models.observation import EuclideanObservation, FullObservation
 from reinforcement_learning.agent import *
-from reinforcement_learning.reward import HandoverPenaltyReward
+from reinforcement_learning.reward import HandoverPenaltyRewardFunction
 
 
 class Experiment:
@@ -25,7 +25,7 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
         # observation = EuclideanObservation(observation_range=observation_range)
         observation = FullObservation()
         effectiveness = VisualEffectiveness()
-        reward = HandoverPenaltyReward(effectiveness=effectiveness)
+        reward_function = HandoverPenaltyRewardFunction(effectiveness=effectiveness)
         self.env = SingleUserSingleServicePartialObservableEnvironment(service_type='visual',
                                                                        num_device=num_device,
                                                                        width=width,
@@ -33,7 +33,7 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
                                                                        depth=depth,
                                                                        max_speed=max_speed,
                                                                        observation=observation,
-                                                                       reward=reward)
+                                                                       reward_function=reward_function)
         self.num_episode = num_episode
         self.num_step = num_step
         self.memory_size = memory_size

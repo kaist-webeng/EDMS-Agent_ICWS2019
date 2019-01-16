@@ -29,18 +29,16 @@ class Agent:
             """ Summary """
             self.loss_list = tf.placeholder(shape=[None], dtype=tf.float32, name="LossList")
             variable_summaries(self.loss_list, "Loss")
-            self.reward_list = tf.placeholder(shape=[None], dtype=tf.float32, name="RewardList")
-            variable_summaries(self.reward_list, "Reward")
             self.execution_time_list = tf.placeholder(shape=[None], dtype=tf.float32, name="ExecutionTImeList")
             variable_summaries(self.execution_time_list, "ExecutionTime")
-            self.summary = tf.summary.merge_all()
+
+        self.summary = tf.summary.merge_all()
 
     @abstractmethod
     def selection(self, sess, user, services):
         """ return selected service object and its index """
         return None, 0
 
-    @abstractmethod
     def train(self, sess):
         pass
 
@@ -73,13 +71,11 @@ class Agent:
                                                                         reward=np.mean(reward_list)))
 
     def summarize_episode(self, sess, writer, i_episode, loss_list, reward_list, execution_time_list):
+        feed_dict = self.env.reward_function.get_summary_feed_dict(reward_list)
+        feed_dict[self.loss_list] = loss_list
+        feed_dict[self.execution_time_list] = execution_time_list
         writer.add_summary(
-            sess.run(self.summary,
-                     feed_dict={
-                         self.loss_list: loss_list,
-                         self.reward_list: reward_list,
-                         self.execution_time_list: execution_time_list
-                     }),
+            sess.run(self.summary, feed_dict=feed_dict),
             i_episode
         )
 
@@ -120,9 +116,9 @@ class GreedySelectionAgent(Agent):
         maximum = -1000000
         index = -1
         for i in range(len(services)):
-            if self.env.effectiveness.measure(user, services[i]) > maximum:
+            if self.env.reward_function.measure(user, services[i]) > maximum:
                 index = i
-                maximum = self.env.effectiveness.measure(user, services[i])
+                maximum = self.env.reward_function.measure(user, services[i])
         return services[index], index
 
 
@@ -212,7 +208,7 @@ class DRRNSelectionAgent(Agent):
                                           observation=memory["observation"]["user"].vectorize(),
                                           actions=[service.vectorize() for service in memory["observation"]["services"]],
                                           action=memory["action"],
-                                          reward=memory["reward"],
+                                          reward=memory["reward"].get_overall_score(),
                                           next_observation=memory["next_observation"]["user"].vectorize(),
                                           next_actions=[service.vectorize() for service in memory["next_observation"]["services"]])
             loss_list.append(loss)
