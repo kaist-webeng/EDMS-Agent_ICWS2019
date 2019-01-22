@@ -79,6 +79,10 @@ def generate_random_coordinate(width, height, depth):
     return Coordinate(x=random.random() * width, y=random.random() * height, z=random.random() * depth)
 
 
+def generate_center_coordinate(width, height, depth):
+    return Coordinate(x=width/2, y=height/2, z=depth/2)
+
+
 class Direction(Vector):
     """ Direction: class that represents direction of a physical entity in a 3-dimensional space """
     def __init__(self, x, y, z):
