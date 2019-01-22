@@ -8,17 +8,18 @@ class ExperienceMemory:
         self.memory = []
         self.size = size
 
-    def add(self, observation, action, reward, next_observation):
+    def add(self, observation, action, reward, next_observation, done):
         while self.is_full():
             # Random pop-up
-            # self.memory.pop(random.randrange(0, len(self.memory)))
+            self.memory.pop(random.randrange(0, len(self.memory)))
             # FIFO
-            self.memory.pop(0)
+            # self.memory.pop(0)
         self.memory.append({
             "observation": observation,
             "action": action,
             "reward": reward,
-            "next_observation": next_observation
+            "next_observation": next_observation,
+            "done": done
         })
 
     def sample(self, batch_size):

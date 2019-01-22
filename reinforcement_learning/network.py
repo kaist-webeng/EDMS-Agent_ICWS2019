@@ -80,9 +80,14 @@ class DRRN(Network):
             self.action_set: actions
         })
 
-    def update(self, sess, observation, actions, action, reward, next_observation, next_actions):
+    def update(self, sess, observation, actions, action, reward, next_observation, next_actions, done):
         """ update network according to given observation, action, reward and next_observation value """
-        target = reward + self.discount_factor * np.max(self.sample(sess, next_observation, next_actions))
+        if done or not next_actions:
+            """ if done, just add reward """
+            target = reward
+        else:
+            """ else, bootstrapping next Q value """
+            target = reward + self.discount_factor * np.max(self.sample(sess, next_observation, next_actions))
         return sess.run(
             (self.loss, self.update_model),
             feed_dict={

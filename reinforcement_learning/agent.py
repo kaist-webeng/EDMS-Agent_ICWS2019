@@ -66,6 +66,9 @@ class Agent:
                 """ add reward to total score """
                 reward_list.append(reward)
 
+                if done:
+                    break
+
             self.summarize_episode(sess, writer, i_episode, [], reward_list, execution_time_list)
             print("Episode {i} ends with average score {reward}".format(i=i_episode,
                                                                         reward=np.mean(reward_list)))
@@ -176,11 +179,14 @@ class DRRNSelectionAgent(Agent):
                 next_observation, reward, done = self.env.step(action)
                 reward_list.append(reward)
 
-                self.memory.add(observation, action_index, reward, next_observation)
+                self.memory.add(observation, action_index, reward, next_observation, done)
 
                 if self.memory.is_full():
                     """ training the network """
                     loss_list += self.learn(sess)
+
+                if done:
+                    break
 
                 """ set observation to next state """
                 observation = next_observation
@@ -210,6 +216,7 @@ class DRRNSelectionAgent(Agent):
                                           action=memory["action"],
                                           reward=memory["reward"].get_overall_score(),
                                           next_observation=memory["next_observation"]["user"].vectorize(),
-                                          next_actions=[service.vectorize() for service in memory["next_observation"]["services"]])
+                                          next_actions=[service.vectorize() for service in memory["next_observation"]["services"]],
+                                          done=memory["done"])
             loss_list.append(loss)
         return loss_list

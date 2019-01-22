@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from models.entity import User, Device, Service
-from models.mobility import generate_random_coordinate, generate_random_direction_random_speed_mobility, StaticMobility, generate_random_direction_specific_speed_mobility
+from models.mobility import generate_random_coordinate, generate_random_direction_random_speed_mobility, StaticMobility, generate_random_direction_specific_speed_mobility, generate_center_coordinate
 from models.orientation import generate_random_orientation, generate_vertical_orientation
 from models.observation import Observation
 from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEffectiveness
@@ -117,9 +117,9 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
             self.devices.append(new_device)
             self.services.append(new_service)
 
-        while not self.get_observation()["services"]:
-            """ update until at least one service discovered """
-            self.update_state()
+        if not self.get_observation()["services"]:
+            """ reset until at least one service discovered """
+            return self.reset()
 
         return self.get_observation()
 
@@ -152,9 +152,9 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
         # TODO state update according to the given action
 
         self.update_state()
-        while not self.get_observation()["services"]:
-            """ update until at least one service discovered """
-            self.update_state()
+        if not self.get_observation()["services"]:
+            """ if no service is discovered, done is True """
+            done = True
 
         return self.get_observation(), reward, done
 
