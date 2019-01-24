@@ -33,22 +33,24 @@ class VisualEffectiveness(Effectiveness):
         if visual_angle < 5/60:
             return 0
 
-        """ User position """
+        """ FoV """
         """"
-            User should be in front of the display
+            Device should be inside of user's FoV
         """
-        relative_coordinate = user.coordinate - service.device.coordinate
-        if relative_coordinate.scalar_projection(service.device.orientation.face.get_vector_part()) < 0:
+        # TODO dev
+        user_face = user.infer_orientation()
+        relative_coordinate = service.device.coordinate - user.coordinate
+        cosine_relative_location_angle = relative_coordinate.get_cosine_angle(user_face)
+        if cosine_relative_location_angle < 0:
             return 0
 
         """ Orientation """
         """
             face of the visual display should be opposite of the user's face
         """
-        user_face = user.infer_orientation()
         device_face = service.device.orientation.face.get_vector_part()
-        cosine_face_angle = user_face.dot(-device_face) / (user_face.size() * device_face.size())
-        if user_face.scalar_projection(-device_face) < 0:
+        cosine_face_angle = user_face.get_cosine_angle(device_face)
+        if cosine_face_angle > 0:
             # angle between user sight and device face is larger than 60 degree
             return 0
 
