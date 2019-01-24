@@ -1,7 +1,7 @@
 import numpy as np
 from abc import abstractmethod
 
-from .mobility import Vector
+from models.math import Vector
 
 
 class Effectiveness:

@@ -1,61 +1,7 @@
 import numpy as np
 import random
 
-from .mobility import Vector
-
-
-class Quaternion:
-    """ Quaternion: class of 4-dimensional quaternion for Orientation and Rotation """
-    def __init__(self, w, i, j, k):
-        self.w = w
-        self.i = i
-        self.j = j
-        self.k = k
-
-    def get(self):
-        return self.w, self.i, self.j, self.k
-
-    def update(self, w, i, j, k):
-        self.w = w
-        self.i = i
-        self.j = j
-        self.k = k
-
-    def vectorize(self):
-        return [self.w, self.i, self.j, self.k]
-
-    def get_vector_part(self):
-        return Vector(self.i, self.j, self.k)
-
-    def get_scalar_part(self):
-        return self.w
-
-    def get_conjugate(self):
-        return Quaternion(self.w, -self.i, -self.j, -self.k)
-
-    def is_unit(self):
-        return np.square(self.w) + np.square(self.i) + np.square(self.j) + np.square(self.k) == 1.
-
-    def __str__(self):
-        return "(W:{w}, I:{i}, J:{j}, K:{k})".format(w=self.w, i=self.i, j=self.j, k=self.k)
-
-    def __mul__(self, other):
-        assert isinstance(other, Quaternion)
-        return Quaternion(
-            w=self.w*other.w - self.i*other.i - self.j*other.j - self.k*other.k,
-            i=self.w*other.i + self.i*other.w + self.j*other.k - self.k*other.j,
-            j=self.w*other.j - self.i*other.k + self.j*other.w + self.k*other.i,
-            k=self.w*other.k + self.i*other.j - self.j*other.i + self.k*other.w
-        )
-
-    def __rmul__(self, other):
-        assert isinstance(other, Quaternion)
-        return Quaternion(
-            w=other.w*self.w - other.i*self.i - other.j*self.j - other.k*self.k,
-            i=other.w*self.i + other.i*self.w + other.j*self.k - other.k*self.j,
-            j=other.w*self.j - other.i*self.k + other.j*self.w + other.k*self.i,
-            k=other.w*self.k + other.i*self.j - other.j*self.i + other.k*self.w
-        )
+from models.math import Quaternion
 
 
 class Rotation(Quaternion):
