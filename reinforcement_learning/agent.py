@@ -139,18 +139,9 @@ class DRRNSelectionAgent(Agent):
         self.memory = ExperienceMemory(memory_size)
         self.batch_size = batch_size
 
-        """ Epsilon greedy configuration """
-        self.eps = 1.0
-        self.eps_final = 1e-2
-        # set decaying rate according to the number of episodes: to make epsilon reaches eps_final at the end
-        self.eps_decay = np.power(self.eps_final, 1 / self.num_episode)
-
     def selection(self, sess, user, services):
-        if random.random() <= self.eps:
-            selection = random.choice(range(len(services)))
-        else:
-            Q_set = self.network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
-            selection = np.argmax(Q_set)
+        Q_set = self.network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
+        selection = np.argmax(Q_set)
         return services[selection], selection
 
     def train(self, sess):
@@ -158,6 +149,12 @@ class DRRNSelectionAgent(Agent):
 
         writer = tf.summary.FileWriter('./summary/{name}/train/{date}'.format(name=self.name, date=self.date),
                                        sess.graph)
+
+        """ Epsilon greedy configuration """
+        eps = 1.0
+        eps_final = 1e-2
+        # set decaying rate according to the number of episodes: to make epsilon reaches eps_final at the end
+        eps_decay = np.power(eps_final, 1 / self.num_episode)
 
         stop_training_threshold = 1
 
@@ -171,8 +168,12 @@ class DRRNSelectionAgent(Agent):
 
             for i_step in range(self.num_step):
                 start_time = time.time()
-                """ select action """
-                action, action_index = self.selection(sess, observation["user"], observation["services"])
+                """ select action: epsilon-greedy """
+                if random.random() <= eps:
+                    action_index = random.choice(range(len(observation["services"])))
+                    action = observation["services"][action_index]
+                else:
+                    action, action_index = self.selection(sess, observation["user"], observation["services"])
                 execution_time_list.append(time.time() - start_time)
 
                 """ perform the selected action on the environment """
@@ -192,8 +193,8 @@ class DRRNSelectionAgent(Agent):
                 observation = next_observation
                 
             """ epsilon decaying for each episode """
-            if self.eps > self.eps_final:
-                self.eps = self.eps_decay * self.eps
+            if eps > eps_final:
+                eps = eps_decay * eps
 
             self.summarize_episode(sess, writer, i_episode, loss_list, reward_list, execution_time_list)
             print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
@@ -201,9 +202,7 @@ class DRRNSelectionAgent(Agent):
                                                                                      loss=np.mean(loss_list)))
             if loss_list and np.max(loss_list) < stop_training_threshold:
                 print("Stop training")
-                self.eps = 0
-                return
-        self.eps = 0  # for further test phase
+                break
 
     def learn(self, sess):
         batch = self.memory.sample(self.batch_size)
