@@ -6,7 +6,7 @@ import time
 from abc import abstractmethod
 
 from reinforcement_learning.network import DRRN
-from reinforcement_learning.experience_memory import ExperienceMemory
+from reinforcement_learning.experience_memory import BasicExperienceMemory, BalancingExperienceMemory
 from models.environment import Environment
 from utils import variable_summaries
 
@@ -50,6 +50,7 @@ class Agent:
 
         for i_episode in range(self.num_episode):
             print("Episode %d" % i_episode)
+            random.seed(i_episode)
 
             reward_list = []
             execution_time_list = []
@@ -136,7 +137,7 @@ class DRRNSelectionAgent(Agent):
                             action_size=self.env.get_action_size())
 
         """ Experience memory setting """
-        self.memory = ExperienceMemory(memory_size)
+        self.memory = BalancingExperienceMemory(memory_size)
         self.batch_size = batch_size
 
     def selection(self, sess, user, services):
@@ -200,6 +201,9 @@ class DRRNSelectionAgent(Agent):
             print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
                                                                                      reward=np.mean(reward_list),
                                                                                      loss=np.mean(loss_list)))
+
+            print("Reward distribution: %s" % self.memory.count)
+
             if loss_list and np.max(loss_list) < stop_training_threshold:
                 print("Stop training")
                 break
