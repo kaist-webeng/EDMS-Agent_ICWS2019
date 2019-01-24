@@ -35,7 +35,7 @@ class Vector:
 
     def get_cosine_angle(self, target):
         assert isinstance(target, Vector)
-        return user_face.dot(device_face) / (user_face.size() * device_face.size())
+        return self.dot(target) / (self.size() * target.size())
 
     def __str__(self):
         return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
