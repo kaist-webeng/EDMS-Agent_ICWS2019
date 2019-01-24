@@ -17,6 +17,12 @@ class Reward:
     def __radd__(self, other):
         return float(other) + float(self)
 
+    def __floordiv__(self, other):
+        return float(self) // other
+
+    def __truediv__(self, other):
+        return float(self) / other
+
     def __float__(self):
         return float(self.get_overall_score())
 
