@@ -39,6 +39,9 @@ class Orientation:
         self.face = rotation.rotate(default_face)
         self.head = rotation.rotate(default_head)
 
+    def __str__(self):
+        return "Orientation face:{face} | head:{head}".format(face=self.face, head=self.head)
+
     def vectorize(self):
         return self.face.get_vector_part().vectorize() + self.head.get_vector_part().vectorize()
 

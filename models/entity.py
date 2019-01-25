@@ -39,11 +39,9 @@ class Service:
             return self.device.vectorize() + [0]
 
     def __str__(self):
-        return "Service name {name}, type {type}, device {device} " \
-               "at {coordinate}".format(name=self.name,
-                                        type=self.type,
-                                        device=self.device.name,
-                                        coordinate=self.device.coordinate)
+        return "Service name {name}, type {type}, device {device}".format(name=self.name,
+                                                                          type=self.type,
+                                                                          device=self.device)
 
 
 class Body:
@@ -84,9 +82,10 @@ class Device(Body):
         self.orientation = orientation
 
     def __str__(self):
-        return "Device {name}, type {type} at {coordinate}".format(name=self.name,
-                                                                   type=self.type,
-                                                                   coordinate=self.coordinate)
+        return "Device {name}, type {type} at {coordinate}, {orientation}".format(name=self.name,
+                                                                                  type=self.type,
+                                                                                  coordinate=self.coordinate,
+                                                                                  orientation=self.orientation)
 
     def vectorize(self):
         return self.coordinate.vectorize() + self.mobility.vectorize() + self.orientation.vectorize()
@@ -100,7 +99,9 @@ class User(Body):
         self.service = None
 
     def __str__(self):
-        return "User {uid} at {coordinate}".format(uid=self.uid, coordinate=self.coordinate)
+        return "User {uid} at {coordinate} orientation {face}".format(uid=self.uid,
+                                                                      coordinate=self.coordinate,
+                                                                      face=self.infer_orientation())
 
     def utilize(self, service):
         assert isinstance(service, Service)

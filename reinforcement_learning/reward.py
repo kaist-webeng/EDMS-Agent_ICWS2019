@@ -26,6 +26,9 @@ class Reward:
     def __float__(self):
         return float(self.get_overall_score())
 
+    def __str__(self):
+        return str(self.get_overall_score())
+
     def __gt__(self, other):
         if isinstance(other, Reward):
             return self.get_overall_score() > other.get_overall_score()
