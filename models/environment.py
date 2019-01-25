@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from models.entity import User, Device, Service
-from models.mobility import generate_random_coordinate, generate_random_direction_random_speed_mobility, StaticMobility, generate_random_direction_specific_speed_mobility, generate_center_coordinate
+from models.mobility import generate_random_coordinate, generate_random_direction_random_speed_mobility, StaticMobility, generate_random_direction_specific_speed_mobility, generate_center_coordinate, generate_horizontal_direction_specific_speed_mobility
 from models.orientation import generate_random_orientation, generate_vertical_orientation
 from models.observation import Observation
 from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEffectiveness
@@ -92,10 +92,10 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
         """ Reset user """
         self.user = User(uid=0,
                          coordinate=generate_center_coordinate(self.width, self.height, self.depth),
-                         mobility=generate_random_direction_specific_speed_mobility(self.width,
-                                                                                    self.height,
-                                                                                    self.depth,
-                                                                                    self.max_speed))
+                         mobility=generate_horizontal_direction_specific_speed_mobility(self.width,
+                                                                                        self.height,
+                                                                                        self.depth,
+                                                                                        self.max_speed))
         self.user.coordinate.depth = 1.8  # set user's height
 
         """ Reset devices and services in the environment """

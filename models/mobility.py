@@ -40,6 +40,10 @@ def generate_random_direction():
     return Direction(random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1))
 
 
+def generate_horizontal_direction():
+    return Direction(random.uniform(-1, 1), random.uniform(-1, 1), 0)
+
+
 class Mobility:
     """ Mobility: class that represents mobility of a physical entity """
     def __init__(self, direction, speed):
@@ -86,6 +90,12 @@ def generate_random_direction_random_speed_mobility(width, height, depth, max_sp
 def generate_random_direction_specific_speed_mobility(width, height, depth, speed):
     return RectangularDirectedMobility(width, height, depth,
                                        generate_random_direction(),
+                                       speed)
+
+
+def generate_horizontal_direction_specific_speed_mobility(width, height, depth, speed):
+    return RectangularDirectedMobility(width, height, depth,
+                                       generate_horizontal_direction(),
                                        speed)
 
 
