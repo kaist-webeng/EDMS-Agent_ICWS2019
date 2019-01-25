@@ -50,6 +50,16 @@ class Reward:
         return self.get_overall_score() <= other
 
 
+class PenaltyReward(Reward):
+    """ PenaltyReward: single reward instance for combining penalty and effectiveness """
+    def __init__(self, penalty, effectiveness):
+        self.penalty = penalty
+        self.effectiveness = effectiveness
+
+    def get_overall_score(self):
+        return self.penalty*0.5 + self.effectiveness
+
+
 class RewardFunction:
     """ RewardFunction: abstract class for reward signal models """
     @abstractmethod
@@ -59,16 +69,6 @@ class RewardFunction:
     @abstractmethod
     def get_summary_feed_dict(self, reward_list):
         pass
-
-
-class PenaltyReward(Reward):
-    """ PenaltyReward: single reward instance for combining penalty and effectiveness """
-    def __init__(self, penalty, effectiveness):
-        self.penalty = penalty
-        self.effectiveness = effectiveness
-
-    def get_overall_score(self):
-        return self.penalty + self.effectiveness
 
 
 class HandoverPenaltyRewardFunction(RewardFunction):
