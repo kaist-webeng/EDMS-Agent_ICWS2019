@@ -202,7 +202,8 @@ class DRRNSelectionAgent(Agent):
                                                                                      reward=np.mean(reward_list),
                                                                                      loss=np.mean(loss_list)))
 
-            print("Reward distribution: %s" % self.memory.count)
+            if isinstance(self.memory, BalancingExperienceMemory):
+                print("Reward distribution: %s" % self.memory.count)
 
             if loss_list and np.max(loss_list) < stop_training_threshold:
                 print("Stop training")
