@@ -25,7 +25,10 @@ class VisualEffectiveness(Effectiveness):
             6/6 vision is defined as: at 6 m distance, human can recognize 5 arc-min letter.
             so size of the minimum letter is: 2 * 6 * tan(5 / 120) = 0.00873 m  
         """
-        visual_angle = np.degrees(2 * np.arctan(0.00873 / (2 * user.distance(service.device))))
+        # TODO currently set text_size as 108 pixels
+        # actual text size shown on display, assuming 1080p resolution
+        text_size = service.device.size * 108 / 1080
+        visual_angle = np.degrees(2 * np.arctan(text_size / (2 * user.distance(service.device))))
         """
             "the size of a letter on the Snellen chart of Landolt C chart is a visual angle of 5 arc minutes"
             https://en.wikipedia.org/wiki/Visual_acuity 

@@ -1,7 +1,8 @@
 import numpy as np
+import random
 from abc import abstractmethod
 
-from models.mobility import Coordinate, Mobility
+from models.mobility import Coordinate, Mobility, StaticMobility
 from models.orientation import Orientation
 
 
@@ -80,6 +81,10 @@ class Device(Body):
 
         assert isinstance(orientation, Orientation)
         self.orientation = orientation
+
+        # TODO size of device: move range configuration to outside of the code
+        # device size 50cm ~ 5m
+        self.size = 0.5 * random.random() * 1
 
     def __str__(self):
         return "Device {name}, type {type} at {coordinate}, {orientation}".format(name=self.name,
