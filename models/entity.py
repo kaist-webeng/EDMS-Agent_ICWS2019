@@ -93,7 +93,10 @@ class Device(Body):
                                                                                   orientation=self.orientation)
 
     def vectorize(self):
-        return self.coordinate.vectorize() + self.mobility.vectorize() + self.orientation.vectorize()
+        if isinstance(self.mobility, StaticMobility):
+            # If mobility is static, skip to put mobility information
+            return self.coordinate.vectorize() + self.orientation.vectorize() + [self.size]
+        return self.coordinate.vectorize() + self.orientation.vectorize() + self.mobility.vectorize() + [self.size]
 
 
 class User(Body):
