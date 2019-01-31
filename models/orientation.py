@@ -50,6 +50,14 @@ def generate_random_orientation():
     return Orientation(random.uniform(-2, 2)*np.pi, random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1))
 
 
-def generate_vertical_orientation():
+def generate_random_vertical_orientation():
     """ Rotating axis is z-axis, so Orientation head always (0, 0, 1) """
     return Orientation(random.uniform(-2, 2)*np.pi, 0, 0, 1)
+
+
+def generate_random_half_line_orientation(width, height, depth, x, y, z):
+    """ orientation that faces half-line of the environment """
+    orientation = generate_random_vertical_orientation()
+    while (height/2 - y) * orientation.face.get_vector_part().y < 0:
+        orientation = generate_random_vertical_orientation()
+    return orientation

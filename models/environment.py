@@ -4,8 +4,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from models.entity import User, Device, Service
-from models.mobility import generate_random_coordinate, generate_random_direction_random_speed_mobility, StaticMobility, generate_random_direction_specific_speed_mobility, generate_center_coordinate, generate_horizontal_direction_specific_speed_mobility
-from models.orientation import generate_random_orientation, generate_vertical_orientation
+from models.mobility import *
+from models.orientation import generate_random_orientation, generate_random_vertical_orientation, generate_random_half_line_orientation
 from models.observation import Observation
 from models.effectiveness import Effectiveness, DistanceEffectiveness, VisualEffectiveness
 from reinforcement_learning.reward import RewardFunction
@@ -94,26 +94,34 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
 
         """ Reset user """
         self.user = User(uid=0,
-                         coordinate=generate_center_coordinate(self.width, self.height, self.depth),
-                         mobility=generate_horizontal_direction_specific_speed_mobility(self.width,
-                                                                                        self.height,
-                                                                                        self.depth,
-                                                                                        self.max_speed))
-        self.user.coordinate.depth = 1.8  # set user's height
+                         # Start from edge of the environment
+                         coordinate=generate_custom_coordinate(self.width, self.height, self.depth,
+                                                               x=10, y=self.height/2,
+                                                               # Common height of a human
+                                                               z=1.7),
+                         # Go across the environment
+                         mobility=generate_custom_mobility(self.width,
+                                                           self.height,
+                                                           self.depth,
+                                                           generate_custom_direction(1, 0, 0),
+                                                           self.max_speed))
 
         """ Reset devices and services in the environment """
         for i in range(self.num_device):
             # TODO currently, service is a simple encapsulation of device functionality, so device_type == service_type
+            coordinate = generate_random_coordinate(self.width, self.height, self.depth)
+            orientation = generate_random_half_line_orientation(self.width, self.height, self.depth,
+                                                                coordinate.x, coordinate.y, coordinate.z)
             new_device = Device(name=i,
                                 device_type=self.service_type,
-                                coordinate=generate_random_coordinate(self.width, self.height, self.depth),
+                                coordinate=coordinate,
                                 mobility=StaticMobility(),
                                 # mobility=generate_random_rectangular_directed_mobility(self.width,
                                 #                                                        self.height,
                                 #                                                        self.depth,
                                 #                                                        self.max_speed),
                                 # orientation=generate_random_orientation())
-                                orientation=generate_vertical_orientation())
+                                orientation=orientation)
             new_service = Service(name=i,
                                   service_type=self.service_type,
                                   device=new_device)

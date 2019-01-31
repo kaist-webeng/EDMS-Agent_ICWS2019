@@ -22,6 +22,11 @@ def generate_center_coordinate(width, height, depth):
     return Coordinate(x=width/2, y=height/2, z=depth/2)
 
 
+def generate_custom_coordinate(width, height, depth, x, y, z):
+    assert x <= width and y <= height and z <= depth
+    return Coordinate(x=x, y=y, z=z)
+
+
 class Direction(Vector):
     """ Direction: class that represents direction of a physical entity in a 3-dimensional space """
     def __init__(self, x, y, z):
@@ -42,6 +47,10 @@ def generate_random_direction():
 
 def generate_horizontal_direction():
     return Direction(random.uniform(-1, 1), random.uniform(-1, 1), 0)
+
+
+def generate_custom_direction(x, y, z):
+    return Direction(x=x, y=y, z=z)
 
 
 class Mobility:
@@ -97,6 +106,10 @@ def generate_horizontal_direction_specific_speed_mobility(width, height, depth, 
     return RectangularDirectedMobility(width, height, depth,
                                        generate_horizontal_direction(),
                                        speed)
+
+
+def generate_custom_mobility(width, height, depth, direction, speed):
+    return RectangularDirectedMobility(width=width, height=height, depth=depth, direction=direction, speed=speed)
 
 
 class StaticMobility(Mobility):

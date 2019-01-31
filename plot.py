@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 from models.entity import User, Service, Device
 from models.mobility import Direction, Coordinate, RectangularDirectedMobility, StaticMobility
-from models.orientation import generate_vertical_orientation
+from models.orientation import generate_random_vertical_orientation
 from models.effectiveness import Effectiveness, VisualEffectiveness
 
 
@@ -28,7 +28,7 @@ def plot_effectiveness(width, height, user_speed, effectiveness):
     def calculate_effectiveness(user_instance, x, y):
         device_mobility = StaticMobility()
         device_coordinate = Coordinate(x, y, 0)
-        device_orientation = generate_vertical_orientation()
+        device_orientation = generate_random_vertical_orientation()
         device = Device(name="", device_type="Visual",
                         coordinate=device_coordinate, mobility=device_mobility, orientation=device_orientation)
 
