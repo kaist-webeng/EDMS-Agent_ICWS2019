@@ -31,9 +31,9 @@ class BasicExperienceMemory(ExperienceMemory):
     def add(self, observation, action, reward, next_observation, done):
         while self.is_full():
             # Random pop-up
-            self.memory.pop(random.randrange(0, len(self.memory)))
+            # self.memory.pop(random.randrange(0, len(self.memory)))
             # FIFO
-            # self.memory.pop(0)
+            self.memory.pop(0)
         self.memory.append({
             "observation": observation,
             "action": action,
