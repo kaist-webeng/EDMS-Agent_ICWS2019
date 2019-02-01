@@ -130,18 +130,21 @@ class DRRNSelectionAgent(Agent):
     def __init__(self, name, env, num_episode, num_step, learning_rate, discount_factor, memory_size, batch_size):
         Agent.__init__(self, name, env, num_episode, num_step)
 
-        self.network = DRRN(name="DRRN",
-                            learning_rate=learning_rate,
-                            discount_factor=discount_factor,
-                            observation_size=self.env.get_observation_size(),
-                            action_size=self.env.get_action_size())
+
+        self.main_network = DRRN(name="main",
+                                 learning_rate=learning_rate,
+                                 discount_factor=discount_factor,
+                                 observation_size=self.env.get_observation_size(),
+                                 action_size=self.env.get_action_size())
+
+        #self.main_network.set_target_network(self.target_network)
 
         """ Experience memory setting """
-        self.memory = BalancingExperienceMemory(memory_size)
+        self.memory = BasicExperienceMemory(memory_size)
         self.batch_size = batch_size
 
     def selection(self, sess, user, services):
-        Q_set = self.network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
+        Q_set = self.main_network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
         selection = np.argmax(Q_set)
         return services[selection], selection
 
@@ -152,10 +155,11 @@ class DRRNSelectionAgent(Agent):
                                        sess.graph)
 
         """ Epsilon greedy configuration """
-        eps = 1.0
+        eps_init = 1.0
+        eps = eps_init
         eps_final = 1e-2
         # set decaying rate according to the number of episodes: to make epsilon reaches eps_final at the end
-        eps_decay = np.power(eps_final, 1 / self.num_episode)
+        eps_decay = np.power(eps_final/eps_init, 1 / self.num_episode)
 
         stop_training_threshold = 1
 
@@ -214,13 +218,13 @@ class DRRNSelectionAgent(Agent):
         loss_list = []
 
         for memory in batch:
-            loss, _ = self.network.update(sess=sess,
-                                          observation=memory["observation"]["user"].vectorize(),
-                                          actions=[service.vectorize() for service in memory["observation"]["services"]],
-                                          action=memory["action"],
-                                          reward=memory["reward"].get_overall_score(),
-                                          next_observation=memory["next_observation"]["user"].vectorize(),
-                                          next_actions=[service.vectorize() for service in memory["next_observation"]["services"]],
-                                          done=memory["done"])
+            loss, _ = self.main_network.update(sess=sess,
+                                               observation=memory["observation"]["user"].vectorize(),
+                                               actions=[service.vectorize() for service in memory["observation"]["services"]],
+                                               action=memory["action"],
+                                               reward=memory["reward"].get_overall_score(),
+                                               next_observation=memory["next_observation"]["user"].vectorize(),
+                                               next_actions=[service.vectorize() for service in memory["next_observation"]["services"]],
+                                               done=memory["done"])
             loss_list.append(loss)
         return loss_list
