@@ -115,14 +115,15 @@ class NoHandoverSelectionAgent(Agent):
 
 
 class GreedySelectionAgent(Agent):
-    """ GreedySelectionAgent: a baseline agent that selects best one currently """
+    """ GreedySelectionAgent: a baseline agent that selects best one currently, in terms of effectiveness """
     def selection(self, sess, user, services):
         maximum = -1000000
         index = -1
         for i in range(len(services)):
-            if self.env.reward_function.measure(user, services[i]) > maximum:
+            reward = self.env.reward_function.measure(user, services[i])
+            if reward.effectiveness > maximum:
                 index = i
-                maximum = self.env.reward_function.measure(user, services[i])
+                maximum = reward.effectiveness
         return services[index], index
 
 
