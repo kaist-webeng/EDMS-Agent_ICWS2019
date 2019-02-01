@@ -57,7 +57,7 @@ class PenaltyReward(Reward):
         self.effectiveness = effectiveness
 
     def get_overall_score(self):
-        return self.penalty*0.5 + self.effectiveness
+        return self.penalty + self.effectiveness
 
 
 class RewardFunction:
