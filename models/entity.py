@@ -121,4 +121,4 @@ class User(Body):
         return self.mobility.direction
 
     def vectorize(self):
-        return self.coordinate.vectorize() + self.mobility.vectorize()
+        return self.coordinate.vectorize() + self.infer_orientation().vectorize() + self.mobility.vectorize()
