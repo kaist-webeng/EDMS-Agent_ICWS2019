@@ -87,7 +87,7 @@ class HandoverPenaltyRewardFunction(RewardFunction):
 
     def measure(self, user, service, context=None):
         """ Handover """
-        if not (service.in_use and service.user == user):
+        if not (service.in_use and service.user == user) and user.service:
             penalty = -1
         else:
             penalty = 0
