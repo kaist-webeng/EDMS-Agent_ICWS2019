@@ -48,12 +48,12 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
             self.agent = NoHandoverSelectionAgent("NoHandover", self.env, self.num_episode, self.num_step)
         if agent == "greedy":
             self.agent = GreedySelectionAgent("Greedy", self.env, self.num_episode, self.num_step)
-        if agent == "DRRN":
-            self.agent = DRRNSelectionAgent("DRRN", self.env, self.num_episode, self.num_step,
-                                            learning_rate=learning_rate,
-                                            discount_factor=discount_factor,
-                                            memory_size=self.memory_size,
-                                            batch_size=self.batch_size)
+        if agent == "EDSS":
+            self.agent = EDSSAgent("EDSS", self.env, self.num_episode, self.num_step,
+                                   learning_rate=learning_rate,
+                                   discount_factor=discount_factor,
+                                   memory_size=self.memory_size,
+                                   batch_size=self.batch_size)
 
     def reset(self):
         self.env.reset()

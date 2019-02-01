@@ -38,13 +38,15 @@ class Network:
             sess.run(self.variables[idx].assign(var.value()))
 
 
-class DRRN(Network):
+class EDSS(Network):
     """
-        DRRN network for variable size of action space
+        EDSS network for variable size of action space
+
+        Refer DRRN
         He, Ji, et al. "Deep reinforcement learning with an action space defined by natural language." (2016).
     """
     def __init__(self, name, learning_rate, discount_factor, observation_size, action_size):
-        Network.__init__(self, "DRRN/{name}".format(name=name), learning_rate)
+        Network.__init__(self, "EDSS/{name}".format(name=name), learning_rate)
         self.observation_size = observation_size
         self.action_size = action_size
         self.discount_factor = discount_factor

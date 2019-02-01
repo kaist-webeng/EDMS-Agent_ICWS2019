@@ -5,7 +5,7 @@ import random
 import time
 from abc import abstractmethod
 
-from reinforcement_learning.network import DRRN
+from reinforcement_learning.network import EDSS
 from reinforcement_learning.experience_memory import BasicExperienceMemory, BalancingExperienceMemory
 from models.environment import Environment
 from utils import variable_summaries
@@ -127,12 +127,12 @@ class GreedySelectionAgent(Agent):
         return services[index], index
 
 
-class DRRNSelectionAgent(Agent):
+class EDSSAgent(Agent):
     def __init__(self, name, env, num_episode, num_step, learning_rate, discount_factor, memory_size, batch_size):
         Agent.__init__(self, name, env, num_episode, num_step)
 
 
-        self.main_network = DRRN(name="main",
+        self.main_network = EDSS(name="main",
                                  learning_rate=learning_rate,
                                  discount_factor=discount_factor,
                                  observation_size=self.env.get_observation_size(),
