@@ -12,7 +12,7 @@ from utils import variable_summaries
 
 
 class Agent:
-    def __init__(self, name, env, num_episode, num_step):
+    def __init__(self, name, env, date, num_episode, num_step):
         self.name = name
 
         assert isinstance(env, Environment)
@@ -23,7 +23,7 @@ class Agent:
         self.num_step = num_step
 
         # Date of now, for logging
-        self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        self.date = date
 
         with tf.variable_scope("Summary"):
             """ Summary """
@@ -128,8 +128,8 @@ class GreedySelectionAgent(Agent):
 
 
 class EDSSAgent(Agent):
-    def __init__(self, name, env, num_episode, num_step, learning_rate, discount_factor, memory_size, batch_size):
-        Agent.__init__(self, name, env, num_episode, num_step)
+    def __init__(self, name, env, date, num_episode, num_step, learning_rate, discount_factor, memory_size, batch_size):
+        Agent.__init__(self, name, env, date, num_episode, num_step)
 
 
         self.main_network = EDSS(name="main",
@@ -152,7 +152,8 @@ class EDSSAgent(Agent):
     def train(self, sess):
         print("Train phase")
 
-        writer = tf.summary.FileWriter('./summary/{name}/train/{date}'.format(name=self.name, date=self.date),
+        writer = tf.summary.FileWriter('{path}/{name}/train/{date}'.format(path=tf.flags.FLAGS.summary_path,
+                                                                           name=self.name, date=self.date),
                                        sess.graph)
 
         """ Epsilon greedy configuration """

@@ -7,6 +7,10 @@ class Observation:
     def get_observation(self, user, services):
         pass
 
+    @abstractmethod
+    def __str__(self):
+        pass
+
 
 class EuclideanObservation(Observation):
     def __init__(self, observation_range):
@@ -22,6 +26,9 @@ class EuclideanObservation(Observation):
             "services": service_observation
         }
 
+    def __str__(self):
+        return "EuclideanObservation({range})".format(range=self.observation_range)
+
 
 class FullObservation(Observation):
     def get_observation(self, user, services):
@@ -29,3 +36,6 @@ class FullObservation(Observation):
             "user": user,
             "services": services
         }
+
+    def __str__(self):
+        return "FullObservation"

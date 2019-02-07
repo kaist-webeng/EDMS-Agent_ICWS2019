@@ -1,8 +1,5 @@
-from models.effectiveness import VisualEffectiveness
 from models.environment import SingleUserSingleServicePartialObservableEnvironment
-from models.observation import EuclideanObservation, FullObservation
 from reinforcement_learning.agent import *
-from reinforcement_learning.reward import HandoverPenaltyRewardFunction
 
 
 class Experiment:
@@ -15,43 +12,43 @@ class Experiment:
         pass
 
 
-class EffectDrivenVisualServiceSelectionExperiment(Experiment):
+class EffectDrivenServiceSelectionExperiment(Experiment):
     """
-        EffectDrivenVisualServiceSelectionExperiment
+        EffectDrivenServiceSelectionExperiment
         
         Experiment done on the SingleUserSingleServicePartialObservable3DEnvironment
     """
-    def __init__(self, num_device, width, height, depth, max_speed, observation_range, num_episode, num_step, memory_size, batch_size, learning_rate, discount_factor, agent):
-        # observation = EuclideanObservation(observation_range=observation_range)
-        observation = FullObservation()
-        effectiveness = VisualEffectiveness()
-        reward_function = HandoverPenaltyRewardFunction(effectiveness=effectiveness)
+    def __init__(self, configuration):
+        self.configuration = configuration
+
         self.env = SingleUserSingleServicePartialObservableEnvironment(service_type='visual',
-                                                                       num_device=num_device,
-                                                                       width=width,
-                                                                       height=height,
-                                                                       depth=depth,
-                                                                       max_speed=max_speed,
-                                                                       observation=observation,
-                                                                       reward_function=reward_function)
-        self.num_episode = num_episode
-        self.num_step = num_step
-        self.memory_size = memory_size
-        self.batch_size = batch_size
+                                                                       num_device=configuration.num_device,
+                                                                       width=configuration.width,
+                                                                       height=configuration.height,
+                                                                       depth=configuration.depth,
+                                                                       max_speed=configuration.max_speed,
+                                                                       observation=configuration.observation,
+                                                                       reward_function=configuration.reward_function)
+        self.num_episode = configuration.num_episode
+        self.num_step = configuration.num_step
+        self.memory_size = configuration.memory_size
+        self.batch_size = configuration.batch_size
+
+        self.date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
         """ In the code, only one agent should be constructed, Otherwise, error occurs in summary """
-        if agent == "random":
-            self.agent = RandomSelectionAgent("Random", self.env, self.num_episode, self.num_step)
-        if agent == "nearest":
-            self.agent = NearestSelectionAgent("Nearest", self.env, self.num_episode, self.num_step)
-        if agent == "nohandover":
-            self.agent = NoHandoverSelectionAgent("NoHandover", self.env, self.num_episode, self.num_step)
-        if agent == "greedy":
-            self.agent = GreedySelectionAgent("Greedy", self.env, self.num_episode, self.num_step)
-        if agent == "EDSS":
-            self.agent = EDSSAgent("EDSS", self.env, self.num_episode, self.num_step,
-                                   learning_rate=learning_rate,
-                                   discount_factor=discount_factor,
+        if configuration.agent == "random":
+            self.agent = RandomSelectionAgent("Random", self.env, self.date, self.num_episode, self.num_step)
+        if configuration.agent == "nearest":
+            self.agent = NearestSelectionAgent("Nearest", self.env, self.date, self.num_episode, self.num_step)
+        if configuration.agent == "nohandover":
+            self.agent = NoHandoverSelectionAgent("NoHandover", self.env, self.date, self.num_episode, self.num_step)
+        if configuration.agent == "greedy":
+            self.agent = GreedySelectionAgent("Greedy", self.env, self.date, self.num_episode, self.num_step)
+        if configuration.agent == "EDSS":
+            self.agent = EDSSAgent("EDSS", self.env, self.date, self.num_episode, self.num_step,
+                                   learning_rate=configuration.learning_rate,
+                                   discount_factor=configuration.discount_factor,
                                    memory_size=self.memory_size,
                                    batch_size=self.batch_size)
 
@@ -59,6 +56,9 @@ class EffectDrivenVisualServiceSelectionExperiment(Experiment):
         self.env.reset()
 
     def run(self):
+        self.configuration.save(name=self.configuration.agent,
+                                phase="train",
+                                date=self.date)
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 

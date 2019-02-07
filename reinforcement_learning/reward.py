@@ -70,6 +70,10 @@ class RewardFunction:
     def get_summary_feed_dict(self, reward_list):
         pass
 
+    @abstractmethod
+    def __str__(self):
+        pass
+
 
 class HandoverPenaltyRewardFunction(RewardFunction):
     """ HandoverPenaltyRewardFunction: giving penalty when handover, otherwise effectiveness """
@@ -84,6 +88,9 @@ class HandoverPenaltyRewardFunction(RewardFunction):
             variable_summaries(self.effectiveness_list, "Effectiveness")
             self.overall_score_list = tf.placeholder(shape=[None], dtype=tf.float32, name="OverallScoreList")
             variable_summaries(self.overall_score_list, "OverallScore")
+
+    def __str__(self):
+        return "HandoverPenaltyReward({effectiveness})".format(effectiveness=type(self.effectiveness).__name__)
 
     def measure(self, user, service, context=None):
         """ Handover """
