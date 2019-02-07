@@ -45,7 +45,7 @@ class Agent:
     def test(self, sess):
         print("Test phase")
 
-        writer = tf.summary.FileWriter('./summary/{name}/test/{date}'.format(name=self.name, date=self.date),
+        writer = tf.summary.FileWriter('./summary/{name}/{date}/test'.format(name=self.name, date=self.date),
                                        sess.graph)
 
         for i_episode in range(self.num_episode):
@@ -152,7 +152,7 @@ class EDSSAgent(Agent):
     def train(self, sess):
         print("Train phase")
 
-        writer = tf.summary.FileWriter('{path}/{name}/train/{date}'.format(path=tf.flags.FLAGS.summary_path,
+        writer = tf.summary.FileWriter('{path}/{name}/{date}/train'.format(path=tf.flags.FLAGS.summary_path,
                                                                            name=self.name, date=self.date),
                                        sess.graph)
 

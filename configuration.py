@@ -37,16 +37,15 @@ class Configuration:
         self.discount_factor = discount_factor
         self.agent = agent
 
-    def save(self, name, phase, date):
+    def save(self, name, date):
         class CustomEncoder(json.JSONEncoder):
             def default(self, obj):
                 if isinstance(obj, Observation) or isinstance(obj, RewardFunction):
                     return str(obj)
                 return json.JSONEncoder.default(self, obj)
-        file_path = "{path}/{name}/{phase}/{date}/configuration.txt".format(path=tf.flags.FLAGS.summary_path,
-                                                                            name=name,
-                                                                            phase=phase,
-                                                                            date=date)
+        file_path = "{path}/{name}/{date}/configuration.txt".format(path=tf.flags.FLAGS.summary_path,
+                                                                    name=name,
+                                                                    date=date)
         if not os.path.exists(os.path.dirname(file_path)):
             try:
                 os.makedirs(os.path.dirname(file_path))

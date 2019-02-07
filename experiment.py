@@ -57,7 +57,6 @@ class EffectDrivenServiceSelectionExperiment(Experiment):
 
     def run(self):
         self.configuration.save(name=self.configuration.agent,
-                                phase="train",
                                 date=self.date)
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
