@@ -37,6 +37,9 @@ class Vector:
         assert isinstance(target, Vector)
         return self.dot(target) / (self.size() * target.size())
 
+    def get_angle(self, target):
+        return np.degrees(np.arccos(self.get_cosine_angle(target)))
+
     def __str__(self):
         return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
 

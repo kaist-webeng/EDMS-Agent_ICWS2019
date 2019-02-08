@@ -74,7 +74,7 @@ class Body:
 class Device(Body):
     """ Device: a basic class that represents devices """
 
-    def __init__(self, name, device_type, coordinate, mobility, orientation):
+    def __init__(self, name, device_type, coordinate, mobility, orientation, size):
         Body.__init__(self, coordinate, mobility)
         self.name = name
         self.type = device_type
@@ -82,9 +82,7 @@ class Device(Body):
         assert isinstance(orientation, Orientation)
         self.orientation = orientation
 
-        # TODO size of device: move range configuration to outside of the code
-        # device size 50cm ~ 5m
-        self.size = 0.5 * random.random() * 1
+        self.size = size
 
     def __str__(self):
         return "Device {name}, type {type} at {coordinate}, {orientation}".format(name=self.name,

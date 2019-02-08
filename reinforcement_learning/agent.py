@@ -128,7 +128,9 @@ class GreedySelectionAgent(Agent):
 
 
 class EDSSAgent(Agent):
-    def __init__(self, name, env, date, num_episode, num_step, learning_rate, discount_factor, memory_size, batch_size):
+    def __init__(self, name, env, date, num_episode, num_step,
+                 memory_size, batch_size, learning_rate, discount_factor,
+                 eps_init, eps_final, eps_decay):
         Agent.__init__(self, name, env, date, num_episode, num_step)
 
 
@@ -144,6 +146,11 @@ class EDSSAgent(Agent):
         self.memory = BasicExperienceMemory(memory_size)
         self.batch_size = batch_size
 
+        """ Epsilon greedy setting """
+        self.eps_init = eps_init
+        self.eps_final = eps_final
+        self.eps_decay = eps_decay
+
     def selection(self, sess, user, services):
         Q_set = self.main_network.sample(sess, user.vectorize(), [service.vectorize() for service in services])
         selection = np.argmax(Q_set)
@@ -157,11 +164,7 @@ class EDSSAgent(Agent):
                                        sess.graph)
 
         """ Epsilon greedy configuration """
-        eps_init = 1.0
-        eps = eps_init
-        eps_final = 1e-2
-        # set decaying rate according to the number of episodes: to make epsilon reaches eps_final at the end
-        eps_decay = np.power(eps_final/eps_init, 1 / self.num_episode)
+        eps = self.eps_init
 
         stop_training_threshold = 1
 
@@ -200,8 +203,10 @@ class EDSSAgent(Agent):
                 observation = next_observation
                 
             """ epsilon decaying for each episode """
-            if eps > eps_final:
-                eps = eps_decay * eps
+            if eps > self.eps_final:
+                eps = self.eps_decay * eps
+            else:
+                eps = self.eps_final
 
             self.summarize_episode(sess, writer, i_episode, loss_list, reward_list, execution_time_list)
             print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,

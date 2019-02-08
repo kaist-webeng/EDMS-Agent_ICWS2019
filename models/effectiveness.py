@@ -19,32 +19,38 @@ class DistanceEffectiveness(Effectiveness):
 
 class VisualEffectiveness(Effectiveness):
     """ VisualEffectiveness: effectiveness model for visual services """
+    def __init__(self):
+        self.text_size_pixel = 54
+        self.resolution = 1080
+        self.visual_angle_min = 5/60
+        self.FoV_angle_max = 90
+        self.face_angle_max = 90
+
     def measure(self, user, service, context=None):
         """ Visual angle """
         """ 
             6/6 vision is defined as: at 6 m distance, human can recognize 5 arc-min letter.
             so size of the minimum letter is: 2 * 6 * tan(5 / 120) = 0.00873 m  
         """
-        # TODO currently set text_size as 108 pixels
-        # actual text size shown on display, assuming 1080p resolution
-        text_size = service.device.size * 108 / 1080
+        # TODO currently set text_size as 54 pixels
+        # actual text size shown on display, assuming FHD 1080p resolution
+        text_size = service.device.size * self.text_size_pixel / self.resolution
         visual_angle = np.degrees(2 * np.arctan(text_size / (2 * user.distance(service.device))))
         """
             "the size of a letter on the Snellen chart of Landolt C chart is a visual angle of 5 arc minutes"
             https://en.wikipedia.org/wiki/Visual_acuity 
         """
-        if visual_angle < 5/60:
+        if visual_angle < self.visual_angle_min:
             return 0
 
         """ FoV """
         """"
             Device should be inside of user's FoV
         """
-        # TODO dev
         user_face = user.infer_orientation()
         relative_coordinate = service.device.coordinate - user.coordinate
-        cosine_relative_location_angle = relative_coordinate.get_cosine_angle(user_face)
-        if cosine_relative_location_angle < 0:
+        relative_location_angle = relative_coordinate.get_angle(user_face)
+        if relative_location_angle > self.FoV_angle_max:
             return 0
 
         """ Orientation """
@@ -52,8 +58,8 @@ class VisualEffectiveness(Effectiveness):
             face of the visual display should be opposite of the user's face
         """
         device_face = service.device.orientation.face.get_vector_part()
-        cosine_face_angle = user_face.get_cosine_angle(device_face)
-        if cosine_face_angle > 0:
+        face_angle = user_face.get_angle(-device_face)
+        if face_angle > self.face_angle_max:
             # angle between user sight and device face is larger than 60 degree
             return 0
 

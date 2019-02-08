@@ -26,6 +26,8 @@ class EffectDrivenServiceSelectionExperiment(Experiment):
                                                                        width=configuration.width,
                                                                        height=configuration.height,
                                                                        depth=configuration.depth,
+                                                                       device_size_min=configuration.device_size_min,
+                                                                       device_size_max=configuration.device_size_max,
                                                                        max_speed=configuration.max_speed,
                                                                        observation=configuration.observation,
                                                                        reward_function=configuration.reward_function)
@@ -47,10 +49,13 @@ class EffectDrivenServiceSelectionExperiment(Experiment):
             self.agent = GreedySelectionAgent("Greedy", self.env, self.date, self.num_episode, self.num_step)
         if configuration.agent == "EDSS":
             self.agent = EDSSAgent("EDSS", self.env, self.date, self.num_episode, self.num_step,
+                                   memory_size=self.memory_size,
+                                   batch_size=self.batch_size,
                                    learning_rate=configuration.learning_rate,
                                    discount_factor=configuration.discount_factor,
-                                   memory_size=self.memory_size,
-                                   batch_size=self.batch_size)
+                                   eps_init=configuration.eps_init,
+                                   eps_final=configuration.eps_final,
+                                   eps_decay=configuration.eps_decay)
 
     def reset(self):
         self.env.reset()

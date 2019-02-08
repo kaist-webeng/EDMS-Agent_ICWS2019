@@ -13,7 +13,8 @@ from reinforcement_learning.reward import RewardFunction
 
 class Environment:
     """ Environment: abstract class of IoT environments for required methods """
-    def __init__(self, service_type, num_device, width, height, depth, reward_function):
+    def __init__(self, service_type, num_device, width, height, depth,
+                 device_size_min, device_size_max, reward_function):
         """ service_type: type of service to simulate """
         self.service_type = service_type
         """ num_device: number of devices """
@@ -24,6 +25,10 @@ class Environment:
         self.height = height
         """ depth: z-axis size of the environment """
         self.depth = depth
+
+        """ device_size_min/max: min/max size of devices """
+        self.device_size_min = device_size_min
+        self.device_size_max = device_size_max
 
         """ reward: reward model """
         assert isinstance(reward_function, RewardFunction)
@@ -78,7 +83,8 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
             - Partial observation based on Euclidean-distance
             - 3-dimensional space
     """
-    def __init__(self, service_type, num_device, width, height, depth, max_speed, observation, reward_function):
+    def __init__(self, service_type, num_device, width, height, depth, device_size_min, device_size_max,
+                 max_speed, observation, reward_function):
         """ max_speed: maximum speed that a mobile object can have """
         self.max_speed = max_speed
 
@@ -86,7 +92,8 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
         assert isinstance(observation, Observation)
         self.observation = observation
 
-        Environment.__init__(self, service_type, num_device, width, height, depth, reward_function)
+        Environment.__init__(self, service_type, num_device, width, height, depth,
+                             device_size_min, device_size_max, reward_function)
 
     def reset(self):
         self.devices = []
@@ -121,7 +128,8 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
                                 #                                                        self.depth,
                                 #                                                        self.max_speed),
                                 # orientation=generate_random_orientation())
-                                orientation=orientation)
+                                orientation=orientation,
+                                size=self.device_size_min+random.random()*(self.device_size_max-self.device_size_min))
             new_service = Service(name=i,
                                   service_type=self.service_type,
                                   device=new_device)

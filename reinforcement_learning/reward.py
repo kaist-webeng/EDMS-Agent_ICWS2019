@@ -1,4 +1,5 @@
 import tensorflow as tf
+import json
 from abc import abstractmethod
 
 from models.effectiveness import Effectiveness
@@ -90,7 +91,10 @@ class HandoverPenaltyRewardFunction(RewardFunction):
             variable_summaries(self.overall_score_list, "OverallScore")
 
     def __str__(self):
-        return "HandoverPenaltyReward({effectiveness})".format(effectiveness=type(self.effectiveness).__name__)
+        return "HandoverPenaltyReward({effectiveness}: {factors}".format(
+            effectiveness=type(self.effectiveness).__name__,
+            factors=json.dumps(self.effectiveness.__dict__)
+        )
 
     def measure(self, user, service, context=None):
         """ Handover """
