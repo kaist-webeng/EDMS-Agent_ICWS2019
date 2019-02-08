@@ -43,7 +43,7 @@ class Orientation:
         return "Orientation face:{face} | head:{head}".format(face=self.face, head=self.head)
 
     def vectorize(self):
-        return self.face.get_vector_part().vectorize() + self.head.get_vector_part().vectorize()
+        return self.face.get_vector_part().vectorize()  # TODO skip head  + self.head.get_vector_part().vectorize()
 
 
 def generate_random_orientation():
