@@ -32,7 +32,6 @@ class VisualEffectiveness(Effectiveness):
             6/6 vision is defined as: at 6 m distance, human can recognize 5 arc-min letter.
             so size of the minimum letter is: 2 * 6 * tan(5 / 120) = 0.00873 m  
         """
-        # TODO currently set text_size as 54 pixels
         # actual text size shown on display, assuming FHD 1080p resolution
         text_size = service.device.size * self.text_size_pixel / self.resolution
         visual_angle = np.degrees(2 * np.arctan(text_size / (2 * user.distance(service.device))))
