@@ -166,8 +166,6 @@ class EDSSAgent(Agent):
         """ Epsilon greedy configuration """
         eps = self.eps_init
 
-        stop_training_threshold = 1
-
         for i_episode in range(self.num_episode):
             print("Episode %d" % i_episode)
 
@@ -215,10 +213,6 @@ class EDSSAgent(Agent):
 
             if isinstance(self.memory, BalancingExperienceMemory):
                 print("Reward distribution: %s" % self.memory.count)
-
-            if loss_list and np.max(loss_list) < stop_training_threshold:
-                print("Stop training")
-                break
 
     def learn(self, sess):
         batch = self.memory.sample(self.batch_size)
