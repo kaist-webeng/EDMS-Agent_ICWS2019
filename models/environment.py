@@ -117,17 +117,12 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
         for i in range(self.num_device):
             # TODO currently, service is a simple encapsulation of device functionality, so device_type == service_type
             coordinate = generate_random_coordinate(self.width, self.height, self.depth)
-            orientation = generate_random_half_line_orientation(self.width, self.height, self.depth,
-                                                                coordinate.x, coordinate.y, coordinate.z)
+            mobility = StaticMobility()
+            orientation = generate_random_orientation()
             new_device = Device(name=i,
                                 device_type=self.service_type,
                                 coordinate=coordinate,
-                                mobility=StaticMobility(),
-                                # mobility=generate_random_rectangular_directed_mobility(self.width,
-                                #                                                        self.height,
-                                #                                                        self.depth,
-                                #                                                        self.max_speed),
-                                # orientation=generate_random_orientation())
+                                mobility=mobility,
                                 orientation=orientation,
                                 size=self.device_size_min+random.random()*(self.device_size_max-self.device_size_min))
             new_service = Service(name=i,
