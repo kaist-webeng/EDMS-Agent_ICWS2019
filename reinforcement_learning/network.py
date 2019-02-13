@@ -102,13 +102,16 @@ class EDSS(Network):
                     )
                 )
 
+                usage = tf.slice(self.action_set, [0, 7], [num_actions, 1])
+
             """ concatenated values """
             with tf.variable_scope("Combine"):
                 """ combine observation and action """
                 combine = tf.concat(
                     [tf.reshape(perceived_distance, [-1, 1]),
                      tf.reshape(fov_angle, [-1, 1]),
-                     tf.reshape(orientation_angle, [-1, 1])],
+                     tf.reshape(orientation_angle, [-1, 1]),
+                     usage],
                     axis=1
                 )
 
