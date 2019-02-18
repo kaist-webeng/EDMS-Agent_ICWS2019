@@ -3,7 +3,8 @@ import random
 from abc import abstractmethod
 
 from models.mobility import Coordinate, Mobility, StaticMobility
-from models.orientation import Orientation
+from models.orientation import Orientation, Rotation
+from models.math import Vector
 
 
 class Service:
@@ -115,8 +116,18 @@ class User(Body):
 
     def infer_orientation(self):
         """ infer orientation of user head from mobility """
-        # TODO currently, simply returns direction of user mobility since usually user heads its direction
-        return self.mobility.direction
+        # Orientation of the user is randomly generated based on the mobility
+        mobility_orientation = self.mobility.direction.to_quaternion()
+        random_horizontal_rotation = Rotation(np.random.normal(loc=0.0, scale=0.2), 0, 0, 1)
+        vertical_rotation_axis = self.mobility.direction.cross(Vector(0, 0, 1))
+        random_vertical_rotation = Rotation(np.random.normal(loc=0.0, scale=0.2),
+                                            vertical_rotation_axis.x,
+                                            vertical_rotation_axis.y,
+                                            vertical_rotation_axis.z)
+        user_orientation = random_horizontal_rotation.rotate(
+            random_vertical_rotation.rotate(mobility_orientation)
+        )
+        return user_orientation.get_vector_part()
 
     def vectorize(self):
-        return self.coordinate.vectorize() + self.infer_orientation().vectorize() + self.mobility.vectorize()
+        return self.coordinate.vectorize() + self.mobility.vectorize()
