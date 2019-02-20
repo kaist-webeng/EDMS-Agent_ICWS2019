@@ -50,7 +50,7 @@ class Agent:
 
         for i_episode in range(self.num_episode):
             print("Episode %d" % i_episode)
-            random.seed(i_episode)
+            #random.seed(i_episode)
 
             reward_list = []
             execution_time_list = []
@@ -133,14 +133,11 @@ class EDSSAgentDQN(Agent):
                  eps_init, eps_final, eps_decay):
         Agent.__init__(self, name, env, date, num_episode, num_step)
 
-
         self.main_network = EDSSNetworkDQN(name="main",
                                            learning_rate=learning_rate,
                                            discount_factor=discount_factor,
                                            observation_size=self.env.get_observation_size(),
                                            action_size=self.env.get_action_size())
-
-        #self.main_network.set_target_network(self.target_network)
 
         """ Experience memory setting """
         self.memory = BasicExperienceMemory(memory_size)
