@@ -22,6 +22,11 @@ class Vector:
     def dot(self, other):
         return self.x * other.x + self.y * other.y + self.z * other.z
 
+    def cross(self, other):
+        return Vector(self.y*other.z - self.z*other.y,
+                      self.z*other.x - self.x*other.z,
+                      self.x*other.y - self.y*other.x)
+
     def size(self):
         return np.sqrt(np.square(self.x) + np.square(self.y) + np.square(self.z))
 
@@ -39,6 +44,9 @@ class Vector:
 
     def get_angle(self, target):
         return np.degrees(np.arccos(self.get_cosine_angle(target)))
+
+    def to_quaternion(self):
+        return Quaternion(0, self.x, self.y, self.z)
 
     def __str__(self):
         return "(X:{x}, Y:{y}, Z:{z})".format(x=self.x, y=self.y, z=self.z)
