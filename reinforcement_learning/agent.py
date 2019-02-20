@@ -5,7 +5,7 @@ import random
 import time
 from abc import abstractmethod
 
-from reinforcement_learning.network import EDSS
+from reinforcement_learning.network import EDSSNetworkDQN
 from reinforcement_learning.experience_memory import BasicExperienceMemory, BalancingExperienceMemory
 from models.environment import Environment
 from utils import variable_summaries

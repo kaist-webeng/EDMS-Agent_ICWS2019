@@ -49,7 +49,6 @@ class Network:
     def update(self, sess, observation, actions, action, reward, next_observation, next_actions, done):
         pass
 
-class EDSS(Network):
 
 class EDSSNetworkDQN(Network):
     """
@@ -78,70 +77,29 @@ class EDSSNetworkDQN(Network):
                     tf.reshape(self.observation, [1, self.observation_size]),
                     [num_actions, 1])
 
-                """ Relative location and orientation """
-                user_location = tf.slice(observation_tile, [0, 0], [num_actions, 3])
-                user_orientation = tf.slice(observation_tile, [0, 3], [num_actions, 3])
-                action_locations = tf.slice(self.action_set, [0, 0], [num_actions, 3])
-                action_orientations = tf.slice(self.action_set, [0, 3], [num_actions, 3])
+                relative_coordinate = tf.subtract(tf.slice(self.action_set, [0, 0], [num_actions, 3]),
+                                                  tf.slice(observation_tile, [0, 0], [num_actions, 3]))
 
-                relative_location = tf.math.subtract(action_locations, user_location)
-
-                distance = tf.sqrt(tf.reduce_sum(tf.square(relative_location), axis=1))
-                device_size = tf.reshape(tf.slice(self.action_set, [0, 6], [num_actions, 1]), [-1, ])
-
-                perceived_distance = tf.multiply(distance, device_size)
-
-                fov_angle = tf.math.acos(
-                    tf.divide(
-                        tf.reduce_sum(tf.multiply(user_orientation,
-                                                  relative_location),
-                                      axis=1),
-                        tf.multiply(
-                            tf.sqrt(tf.reduce_sum(tf.square(user_orientation), axis=1)),
-                            tf.sqrt(tf.reduce_sum(tf.square(relative_location), axis=1))
-                        )
-                    )
-                )
-
-                orientation_angle = tf.math.acos(
-                    tf.divide(
-                        tf.reduce_sum(tf.multiply(user_orientation,
-                                                  action_orientations),
-                                      axis=1),
-                        tf.multiply(
-                            tf.sqrt(tf.reduce_sum(tf.square(user_orientation), axis=1)),
-                            tf.sqrt(tf.reduce_sum(tf.square(action_orientations), axis=1))
-                        )
-                    )
-                )
-
-                usage = tf.slice(self.action_set, [0, 7], [num_actions, 1])
-
-            """ concatenated values """
+            """ combine values """
             with tf.variable_scope("Combine"):
-                """ combine observation and action """
+                """ concatenate observation and action """
                 combine = tf.concat(
-                    [tf.reshape(perceived_distance, [-1, 1]),
-                     tf.reshape(fov_angle, [-1, 1]),
-                     tf.reshape(orientation_angle, [-1, 1]),
-                     usage],
+                    [tf.slice(observation_tile, [0, 3], [num_actions, 3]),
+                     tf.slice(self.action_set, [0, 3], [num_actions, 5]),
+                     relative_coordinate],
                     axis=1
                 )
 
-            with tf.variable_scope("Hidden"):
                 combine_hidden_layer_1 = tf.layers.dense(inputs=combine,
-                                                         activation=tf.nn.relu, units=512)
+                                                         activation=tf.nn.leaky_relu, units=128)
                 combine_hidden_layer_2 = tf.layers.dense(inputs=combine_hidden_layer_1,
-                                                         activation=tf.nn.relu, units=512)
-                combine_hidden_layer_3 = tf.layers.dense(inputs=combine_hidden_layer_2,
-                                                         activation=tf.nn.relu, units=512)
-                combine_hidden_layer_output = tf.layers.dense(inputs=combine_hidden_layer_3,
-                                                              activation=tf.nn.relu, units=512)
+                                                         activation=tf.nn.leaky_relu, units=128)
+                combine_hidden_layer_output = tf.layers.dense(inputs=combine_hidden_layer_2,
+                                                              activation=tf.nn.leaky_relu, units=64)
 
             self.Q = tf.layers.dense(inputs=combine_hidden_layer_output,
                                      activation=None,
-                                     units=1,
-                                     bias_initializer=None)
+                                     units=1)
 
             with tf.variable_scope("Training"):
                 """ Training """
