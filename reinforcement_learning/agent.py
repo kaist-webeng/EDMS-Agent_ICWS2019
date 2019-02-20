@@ -127,18 +127,18 @@ class GreedySelectionAgent(Agent):
         return services[index], index
 
 
-class EDSSAgent(Agent):
+class EDSSAgentDQN(Agent):
     def __init__(self, name, env, date, num_episode, num_step,
                  memory_size, batch_size, learning_rate, discount_factor,
                  eps_init, eps_final, eps_decay):
         Agent.__init__(self, name, env, date, num_episode, num_step)
 
 
-        self.main_network = EDSS(name="main",
-                                 learning_rate=learning_rate,
-                                 discount_factor=discount_factor,
-                                 observation_size=self.env.get_observation_size(),
-                                 action_size=self.env.get_action_size())
+        self.main_network = EDSSNetworkDQN(name="main",
+                                           learning_rate=learning_rate,
+                                           discount_factor=discount_factor,
+                                           observation_size=self.env.get_observation_size(),
+                                           action_size=self.env.get_action_size())
 
         #self.main_network.set_target_network(self.target_network)
 
@@ -206,10 +206,15 @@ class EDSSAgent(Agent):
             else:
                 eps = self.eps_final
 
-            self.summarize_episode(sess, writer, i_episode, loss_list, reward_list, execution_time_list)
-            print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
-                                                                                     reward=np.mean(reward_list),
-                                                                                     loss=np.mean(loss_list)))
+            if loss_list:
+                self.summarize_episode(sess, writer, i_episode, loss_list, reward_list, execution_time_list)
+                print("Episode {i} ends with average score {reward}, loss {loss}".format(i=i_episode,
+                                                                                         reward=np.mean(reward_list),
+                                                                                         loss=np.mean(loss_list)))
+            else:
+                self.summarize_episode(sess, writer, i_episode, [None], reward_list, execution_time_list)
+                print("Episode {i} ends with average score {reward}".format(i=i_episode,
+                                                                            reward=np.mean(reward_list)))
 
             if isinstance(self.memory, BalancingExperienceMemory):
                 print("Reward distribution: %s" % self.memory.count)

@@ -37,16 +37,29 @@ class Network:
         for idx, var in enumerate(self.target_variables):
             sess.run(self.variables[idx].assign(var.value()))
 
+    @abstractmethod
+    def sample(self, sess, observation, actions):
+        pass
+
+    @abstractmethod
+    def bootstrap(self, sess, next_observation, next_actions):
+        pass
+
+    @abstractmethod
+    def update(self, sess, observation, actions, action, reward, next_observation, next_actions, done):
+        pass
 
 class EDSS(Network):
+
+class EDSSNetworkDQN(Network):
     """
-        EDSS network for variable size of action space
+        EDSSNetworkDQN network for variable size of action space
 
         Refer DRRN
         He, Ji, et al. "Deep reinforcement learning with an action space defined by natural language." (2016).
     """
     def __init__(self, name, learning_rate, discount_factor, observation_size, action_size):
-        Network.__init__(self, "EDSS/{name}".format(name=name), learning_rate)
+        Network.__init__(self, "{name}".format(name=name), learning_rate)
         self.observation_size = observation_size
         self.action_size = action_size
         self.discount_factor = discount_factor

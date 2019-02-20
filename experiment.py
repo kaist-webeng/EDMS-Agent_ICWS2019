@@ -47,15 +47,15 @@ class EffectDrivenServiceSelectionExperiment(Experiment):
             self.agent = NoHandoverSelectionAgent("NoHandover", self.env, self.date, self.num_episode, self.num_step)
         if configuration.agent == "greedy":
             self.agent = GreedySelectionAgent("Greedy", self.env, self.date, self.num_episode, self.num_step)
-        if configuration.agent == "EDSS":
-            self.agent = EDSSAgent("EDSS", self.env, self.date, self.num_episode, self.num_step,
-                                   memory_size=self.memory_size,
-                                   batch_size=self.batch_size,
-                                   learning_rate=configuration.learning_rate,
-                                   discount_factor=configuration.discount_factor,
-                                   eps_init=configuration.eps_init,
-                                   eps_final=configuration.eps_final,
-                                   eps_decay=configuration.eps_decay)
+        if configuration.agent == "EDSS(DQN)":
+            self.agent = EDSSAgentDQN("EDSS(DQN)", self.env, self.date, self.num_episode, self.num_step,
+                                      memory_size=self.memory_size,
+                                      batch_size=self.batch_size,
+                                      learning_rate=configuration.learning_rate,
+                                      discount_factor=configuration.discount_factor,
+                                      eps_init=configuration.eps_init,
+                                      eps_final=configuration.eps_final,
+                                      eps_decay=configuration.eps_decay)
 
     def reset(self):
         self.env.reset()
