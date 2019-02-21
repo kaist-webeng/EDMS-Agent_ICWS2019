@@ -27,7 +27,14 @@ def main():
                          device_size_max=2,
                          max_speed=2,
                          observation=EuclideanObservation(observation_range=10),
-                         reward_function=HandoverPenaltyRewardFunction(effectiveness=VisualEffectiveness()),
+                         #observation=FullObservation(),
+                         reward_function=HandoverPenaltyRewardFunction(effectiveness=VisualEffectiveness(
+                             text_size_pixel=27,
+                             resolution=1080,
+                             visual_angle_min=5/60,
+                             FoV_angle_max=105,
+                             face_angle_max=90
+                         )),
                          num_episode=1000,
                          num_step=100,
                          memory_size=1000,

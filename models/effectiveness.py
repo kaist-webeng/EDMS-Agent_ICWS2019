@@ -19,12 +19,12 @@ class DistanceEffectiveness(Effectiveness):
 
 class VisualEffectiveness(Effectiveness):
     """ VisualEffectiveness: effectiveness model for visual services """
-    def __init__(self):
-        self.text_size_pixel = 54
-        self.resolution = 1080
-        self.visual_angle_min = 5/60
-        self.FoV_angle_max = 90
-        self.face_angle_max = 90
+    def __init__(self, text_size_pixel, resolution, visual_angle_min, FoV_angle_max, face_angle_max):
+        self.text_size_pixel = text_size_pixel
+        self.resolution = resolution
+        self.visual_angle_min = visual_angle_min
+        self.FoV_angle_max = FoV_angle_max
+        self.face_angle_max = face_angle_max
 
     def measure(self, user, service, context=None):
         """ Visual angle """
