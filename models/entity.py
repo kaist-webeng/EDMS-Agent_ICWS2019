@@ -111,7 +111,8 @@ class User(Body):
         self.uid = uid
         self.service = None
 
-        self.orientation = self.update_orientation()
+        self.orientation = None
+        self.update_orientation()
 
     def __str__(self):
         return "User {uid} at {coordinate} orientation {face}".format(uid=self.uid,
@@ -138,7 +139,7 @@ class User(Body):
         user_orientation = random_horizontal_rotation.rotate(
             random_vertical_rotation.rotate(mobility_orientation)
         )
-        return user_orientation
+        self.orientation = user_orientation
 
     def update(self):
         self.move()
