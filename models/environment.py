@@ -145,9 +145,9 @@ class SingleUserSingleServicePartialObservableEnvironment(Environment):
         }
 
     def update_state(self):
-        self.user.move()
-        for device in self.devices:
-            device.move()
+        self.user.update()
+        for service in self.services:
+            service.update()
 
     def step(self, action):
         """ receives selection result as a service instance """

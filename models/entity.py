@@ -33,6 +33,9 @@ class Service:
         self.in_use = False
         self.user = None
 
+    def update(self):
+        self.device.update()
+
     def vectorize(self):
         # TODO vector representation of services: multi-user situation
         if self.in_use:
@@ -85,6 +88,9 @@ class Device(Body):
 
         self.size = size
 
+    def update(self):
+        self.move()
+
     def __str__(self):
         return "Device {name}, type {type} at {coordinate}, {orientation}".format(name=self.name,
                                                                                   type=self.type,
@@ -105,6 +111,8 @@ class User(Body):
         self.uid = uid
         self.service = None
 
+        self.orientation = self.update_orientation()
+
     def __str__(self):
         return "User {uid} at {coordinate} orientation {face}".format(uid=self.uid,
                                                                       coordinate=self.coordinate,
@@ -115,7 +123,10 @@ class User(Body):
         self.service = service
 
     def infer_orientation(self):
-        """ infer orientation of user head from mobility """
+        return self.orientation.get_vector_part()
+
+    def update_orientation(self):
+        """ update orientation of user head from mobility """
         # Orientation of the user is randomly generated based on the mobility
         mobility_orientation = self.mobility.direction.to_quaternion()
         random_horizontal_rotation = Rotation(np.random.normal(loc=0.0, scale=0.2), 0, 0, 1)
@@ -127,7 +138,11 @@ class User(Body):
         user_orientation = random_horizontal_rotation.rotate(
             random_vertical_rotation.rotate(mobility_orientation)
         )
-        return user_orientation.get_vector_part()
+        return user_orientation
+
+    def update(self):
+        self.move()
+        self.update_orientation()
 
     def vectorize(self):
-        return self.coordinate.vectorize() + self.mobility.vectorize()
+        return self.coordinate.vectorize() + self.infer_orientation().vectorize() + self.mobility.vectorize()
