@@ -22,6 +22,11 @@ class Service:
         self.in_use = False
         self.user = None
 
+    def __str__(self):
+        return "Service name {name}, type {type}, device {device}".format(name=self.name,
+                                                                          type=self.type,
+                                                                          device=self.device)
+
     def acquire(self, user):
         """ acquire: user acquires the service to use """
         assert isinstance(user, User)
@@ -42,11 +47,6 @@ class Service:
             return self.device.vectorize() + [1]
         else:
             return self.device.vectorize() + [0]
-
-    def __str__(self):
-        return "Service name {name}, type {type}, device {device}".format(name=self.name,
-                                                                          type=self.type,
-                                                                          device=self.device)
 
 
 class Body:
@@ -88,14 +88,14 @@ class Device(Body):
 
         self.size = size
 
-    def update(self):
-        self.move()
-
     def __str__(self):
         return "Device {name}, type {type} at {coordinate}, {orientation}".format(name=self.name,
                                                                                   type=self.type,
                                                                                   coordinate=self.coordinate,
                                                                                   orientation=self.orientation)
+
+    def update(self):
+        self.move()
 
     def vectorize(self):
         if isinstance(self.mobility, StaticMobility):
@@ -145,4 +145,4 @@ class User(Body):
         self.update_orientation()
 
     def vectorize(self):
-        return self.coordinate.vectorize() + self.infer_orientation().vectorize() + self.mobility.vectorize()
+        return self.coordinate.vectorize() + self.mobility.vectorize()
