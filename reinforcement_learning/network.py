@@ -95,7 +95,7 @@ class EDSSNetworkDQN(Network):
                 combine_hidden_layer_2 = tf.layers.dense(inputs=combine_hidden_layer_1,
                                                          activation=tf.nn.leaky_relu, units=128)
                 combine_hidden_layer_output = tf.layers.dense(inputs=combine_hidden_layer_2,
-                                                              activation=tf.nn.leaky_relu, units=64)
+                                                              activation=tf.nn.leaky_relu, units=128)
 
             self.Q = tf.layers.dense(inputs=combine_hidden_layer_output,
                                      activation=None,
