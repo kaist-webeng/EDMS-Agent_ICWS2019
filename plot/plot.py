@@ -12,8 +12,9 @@ args = parser.parse_args()
 
 font = {'size': 40}
 matplotlib.rc('font', **font)
+exponential_moving_average_window = 25
 
-version1_dir = "version1"
+version1_dir = "data/version1"
 version1_data = {
         "EDSS": "2019-02-20-12-43-36",
         "Handover": "2019-02-21-15-35-31",
@@ -21,7 +22,7 @@ version1_data = {
         "Random": "2019-02-21-15-40-49"
 }
 
-speed1_dir = "speed1"
+speed1_dir = "data/speed1"
 speed1_data = {
         "EDSS": "2019-02-26-01-38-14",
         "Handover": "2019-02-25-13-43-29",
@@ -115,7 +116,8 @@ def plot_reward(directory_name, data_dict):
     }
 
     for agent in data:
-        plt.plot(x_axis, exponential_moving_average(data[agent], 100), markevery=50, markersize=20, linewidth=2, **get_case_properties(agent))
+        plt.plot(x_axis, exponential_moving_average(data[agent], exponential_moving_average_window),
+                 markevery=50, markersize=25, linewidth=2, **get_case_properties(agent))
 
     # 0 line
     plt.axhline(0, color="black", linestyle="dotted")
@@ -281,6 +283,42 @@ def plot_execution_time(directory_name, data_dict):
     plt.show()
 
 
+def plot_loss(directory_name, data_dict):
+    data = {
+        "max": read_data(directory_name, "EDSS(DQN)", data_dict["EDSS"], "train", "Summary_Loss_max_1")[10:],
+        "min": read_data(directory_name, "EDSS(DQN)", data_dict["EDSS"], "train", "Summary_Loss_min_1")[10:],
+        "mean": read_data(directory_name, "EDSS(DQN)", data_dict["EDSS"], "train", "Summary_Loss_mean_1")[10:],
+        "stddev": read_data(directory_name, "EDSS(DQN)", data_dict["EDSS"], "train", "Summary_Loss_stddev")[10:]
+    }
+
+    # Average reward over simulations
+    x_axis = np.array(range(11, 1001))
+
+    fig, axes = plt.subplots(1, 4)
+
+    axes[0].plot(x_axis, exponential_moving_average(data["max"], exponential_moving_average_window),
+                 color="firebrick", linewidth=1)
+    axes[0].set_ylabel("Maximum (sec)")
+    axes[0].yaxis.grid(True)
+
+    axes[1].plot(x_axis, exponential_moving_average(data["min"], exponential_moving_average_window),
+                 color="firebrick", linewidth=1)
+    axes[1].set_ylabel("Minimum (sec)")
+    axes[1].yaxis.grid(True)
+
+    axes[2].plot(x_axis, exponential_moving_average(data["mean"], exponential_moving_average_window),
+                 color="firebrick", linewidth=1)
+    axes[2].set_ylabel("Average (sec)")
+    axes[2].yaxis.grid(True)
+
+    axes[3].plot(x_axis, exponential_moving_average(data["stddev"], exponential_moving_average_window),
+                 color="firebrick", linewidth=1)
+    axes[3].set_ylabel("Standard deviation")
+    axes[3].yaxis.grid(True)
+
+    plt.show()
+
+
 directory = speed1_dir
 data = speed1_data
 
@@ -291,4 +329,6 @@ elif args.plot == "statistics":
     plot_statistics(directory, data)
 elif args.plot == "execution_time":
     plot_execution_time(directory, data)
+elif args.plot == "loss":
+    plot_loss(directory, data)
 
