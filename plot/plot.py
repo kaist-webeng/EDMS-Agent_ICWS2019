@@ -298,17 +298,17 @@ def plot_loss(directory_name, data_dict):
 
     axes[0].plot(x_axis, exponential_moving_average(data["max"], exponential_moving_average_window),
                  color="firebrick", linewidth=1)
-    axes[0].set_ylabel("Maximum (sec)")
+    axes[0].set_ylabel("Maximum")
     axes[0].yaxis.grid(True)
 
     axes[1].plot(x_axis, exponential_moving_average(data["min"], exponential_moving_average_window),
                  color="firebrick", linewidth=1)
-    axes[1].set_ylabel("Minimum (sec)")
+    axes[1].set_ylabel("Minimum")
     axes[1].yaxis.grid(True)
 
     axes[2].plot(x_axis, exponential_moving_average(data["mean"], exponential_moving_average_window),
                  color="firebrick", linewidth=1)
-    axes[2].set_ylabel("Average (sec)")
+    axes[2].set_ylabel("Average")
     axes[2].yaxis.grid(True)
 
     axes[3].plot(x_axis, exponential_moving_average(data["stddev"], exponential_moving_average_window),

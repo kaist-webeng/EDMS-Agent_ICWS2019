@@ -13,6 +13,9 @@ class Coordinate(Vector):
         assert isinstance(other, Coordinate)
         return np.sqrt(np.square(self.x - other.x) + np.square(self.y - other.y) + np.square(self.z - other.z))
 
+    def vectorize(self, width=200, height=10, depth=3):
+        return [self.x/width, self.y/height, self.z/depth]  # TODO normalization
+
 
 def generate_random_coordinate(width, height, depth):
     return Coordinate(x=random.random() * width, y=random.random() * height, z=random.random() * depth)
@@ -67,7 +70,8 @@ class Mobility:
         return coordinate
 
     def vectorize(self):
-        return (self.speed * self.direction).vectorize()
+        # return (self.speed * self.direction).vectorize() TODO assume static speed
+        return self.direction.vectorize()
 
 
 class RectangularDirectedMobility(Mobility):
